@@ -1,0 +1,1 @@
+-- Data dummy awal (opsional)
