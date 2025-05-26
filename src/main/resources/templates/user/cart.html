@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Keranjang Rental</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto px-6 py-12">
+    <h1 class="text-3xl font-bold mb-8 text-gray-800">Keranjang Rental</h1>
+    <div th:if="${#lists.isEmpty(cart)}" class="text-center text-gray-500">Keranjang kosong.</div>
+    <div th:unless="${#lists.isEmpty(cart)}">
+        <table class="min-w-full bg-white rounded shadow">
+            <thead class="bg-primary-600 text-white">
+                <tr>
+                    <th class="py-3 px-6 text-left">No</th>
+                    <th class="py-3 px-6 text-left">Nama Produk</th>
+                    <th class="py-3 px-6 text-left">Jumlah</th>
+                    <th class="py-3 px-6 text-left">Harga Satuan</th>
+                    <th class="py-3 px-6 text-left">Subtotal</th>
+                    <th class="py-3 px-6 text-left">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item, iterStat : ${cart}">
+                    <td class="py-2 px-6" th:text="${iterStat.index + 1}"></td>
+                    <td class="py-2 px-6" th:text="${item.product.nama}"></td>
+                    <td class="py-2 px-6" th:text="${item.jumlah}"></td>
+                    <td class="py-2 px-6" th:text="${item.hargaSatuan}"></td>
+                    <td class="py-2 px-6" th:text="${item.subtotal}"></td>
+                    <td class="py-2 px-6">
+                        <form th:action="@{'/user/cart/remove/' + ${iterStat.index}}" method="post">
+                            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="mt-6 flex justify-between">
+            <form th:action="@{'/user/cart/clear'}" method="post">
+                <button type="submit" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-600">Kosongkan Keranjang</button>
+            </form>
+            <a href="/user/home" class="bg-primary-600 text-white px-6 py-2 rounded hover:bg-primary-700">Tambah Produk</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

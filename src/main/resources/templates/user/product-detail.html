@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title th:text="${product.nama + ' | Detail Produk'}">Detail Produk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+  <div class="container mx-auto px-4 sm:px-6 py-8 max-w-6xl">
+    <!-- Product Card -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+      <div class="flex flex-col md:flex-row">
+        <!-- Product Image -->
+        <div class="md:w-2/5 p-6 flex items-center justify-center bg-gray-50">
+          <img th:src="${product.imgUrl}" th:alt="${product.nama}" 
+               class="w-full h-80 object-contain rounded-lg" />
+        </div>
+        
+        <!-- Product Details -->
+        <div class="md:w-3/5 p-6 md:p-8">
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2" th:text="${product.nama}">Nama Produk</h1>
+          <span class="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-2.5 py-0.5 rounded mb-4" 
+                th:text="${product.stok + ' tersedia'}">Stok</span>
+          
+          <p class="text-gray-700 mb-6" th:text="${product.deskripsi}">Deskripsi produk</p>
+          
+          <!-- Price Section -->
+          <div class="mb-6">
+            <div class="flex items-center mb-4">
+              <span class="text-gray-600 mr-3">Harga:</span>
+              <span id="hargaProduk" 
+                    class="text-2xl font-bold text-gray-800"
+                    th:data-harga-rental-per-hari="${product.hargaRentalPerHari}"
+                    th:data-harga-jual="${product.hargaJual}">
+                <span th:text="${'Rp ' + #numbers.formatDecimal(product.hargaRentalPerHari, 0, 'COMMA', 2, 'POINT')}"></span>
+              </span>
+              <span id="priceLabel" class="ml-2 text-sm text-gray-500">/hari</span>
+            </div>
+            
+            <!-- Simplified Rent/Buy Buttons -->
+            <div class="flex gap-3 mb-6">
+              <button id="btnSewa" type="button" 
+                      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                Sewa
+              </button>
+              <button id="btnBeli" type="button" 
+                      class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors">
+                Beli
+              </button>
+            </div>
+          </div>
+          
+          <!-- Add to Cart Form -->
+          <form th:action="@{'/user/keranjang/add/' + ${product.idProduk}}" method="post" class="mb-4 flex items-center gap-2">
+            <input type="number" name="jumlah" min="1" value="1" class="w-20 px-2 py-1 border rounded" required />
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+              Tambah ke Keranjang
+            </button>
+          </form>
+          
+          <!-- Bottom Action Buttons -->
+          <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+            <a href="/user/home" 
+               class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
+              <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
+            </a>
+            <button id="btnCheckout" type="button"
+                    class="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition-colors">
+              <i class="fas fa-shopping-bag mr-2"></i> Checkout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const btnSewa = document.getElementById('btnSewa');
+    const btnBeli = document.getElementById('btnBeli');
+    const btnCheckout = document.getElementById('btnCheckout');
+    const hargaProduk = document.getElementById('hargaProduk');
+    const priceLabel = document.getElementById('priceLabel');
+    const hargaRental = hargaProduk.getAttribute('data-harga-rental-per-hari');
+    const hargaJual = hargaProduk.getAttribute('data-harga-jual');
+    
+    // Format currency function
+    function formatCurrency(amount) {
+      return 'Rp ' + parseFloat(amount).toLocaleString('id-ID');
+    }
+    
+    btnSewa.addEventListener('click', function() {
+      hargaProduk.textContent = formatCurrency(hargaRental);
+      priceLabel.textContent = '/hari';
+      btnSewa.classList.add('ring-2', 'ring-blue-300');
+      btnBeli.classList.remove('ring-2', 'ring-green-300');
+    });
+    
+    btnBeli.addEventListener('click', function() {
+      hargaProduk.textContent = formatCurrency(hargaJual);
+      priceLabel.textContent = '';
+      btnBeli.classList.add('ring-2', 'ring-green-300');
+      btnSewa.classList.remove('ring-2', 'ring-blue-300');
+    });
+
+    btnCheckout.addEventListener('click', function() {
+      // Add checkout functionality here
+      alert('Produk telah ditambahkan ke keranjang!');
+    });
+  </script>
+</body>
+</html>

@@ -13,11 +13,18 @@ public class Product {
     private String nama;
     private String deskripsi;
 
-    @Column(name = "img_url")
+    @Column(name = "img_url", columnDefinition = "TEXT")
     private String imgUrl;
 
     @Column(name = "created_at", updatable = false, insertable = false)
     private java.sql.Timestamp createdAt;
+
+    private String kategori;
+    @Column(name = "harga_rental_per_hari")
+    private Integer hargaRentalPerHari;
+    @Column(name = "harga_jual")
+    private Integer hargaJual;
+    private Integer stok;
 
     // Getter & Setter
     public Integer getIdProduk() {
@@ -49,5 +56,30 @@ public class Product {
     }
     public void setCreatedAt(java.sql.Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getKategori() {
+        return kategori;
+    }
+    public void setKategori(String kategori) {
+        this.kategori = kategori;
+    }
+    public Integer getHargaRentalPerHari() {
+        return hargaRentalPerHari;
+    }
+    public void setHargaRentalPerHari(Integer hargaRentalPerHari) {
+        this.hargaRentalPerHari = hargaRentalPerHari;
+    }
+    public Integer getHargaJual() {
+        return hargaJual;
+    }
+    public void setHargaJual(Integer hargaJual) {
+        this.hargaJual = hargaJual;
+    }
+    public Integer getStok() {
+        return stok;
+    }
+    public void setStok(Integer stok) {
+        this.stok = stok;
     }
 }

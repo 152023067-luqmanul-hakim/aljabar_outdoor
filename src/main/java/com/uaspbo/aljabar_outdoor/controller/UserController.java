@@ -3,6 +3,7 @@ package com.uaspbo.aljabar_outdoor.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,5 +28,12 @@ public class UserController {
     @GetMapping("/profile")
     public String userProfile() {
         return "user/profile";
+    }
+
+    @GetMapping("/product/{id}")
+    public String productDetail(@PathVariable("id") Integer id, Model model) {
+        Product product = productRepository.findById(id).orElse(null);
+        model.addAttribute("product", product);
+        return "user/product-detail";
     }
 }
