@@ -3,13 +3,24 @@ package com.uaspbo.aljabar_outdoor.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.ui.Model;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.uaspbo.aljabar_outdoor.repository.ProductRepository;
+import com.uaspbo.aljabar_outdoor.model.Product;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
 
+    @Autowired
+    private ProductRepository productRepository;
+
     @GetMapping("/home")
-    public String userHome() {
+    public String userHome(Model model) {
+        List<Product> products = productRepository.findAll();
+        model.addAttribute("products", products);
         return "user/home";
     }
 

@@ -1,12 +1,114 @@
-<!-- User home page template -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Aljabar Outdoor - Produk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    Halooo
+  <body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+      <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="text-xl font-bold">Aljabar Outdoor</div>
+          <div class="flex items-center space-x-4">
+            <a href="#" class="hover:text-gray-200">Beranda</a>
+            <a href="#" class="hover:text-gray-200">Produk</a>
+            <form th:action="@{/logout}" method="post" class="inline">
+              <button type="submit" class="hover:text-gray-200">Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="bg-white">
+      <div class="container mx-auto px-6 py-16">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">
+          Peralatan Outdoor Terbaik
+        </h1>
+        <p class="text-gray-600 max-w-2xl mb-8">
+          Temukan perlengkapan outdoor berkualitas untuk petualangan Anda. Kami
+          menyediakan berbagai produk terbaik untuk kebutuhan outdoor Anda.
+        </p>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="container mx-auto px-6 py-12">
+      <h2 class="text-2xl font-bold text-gray-800 mb-8">Produk Kami</h2>
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+      >
+        <!-- Product Card -->
+        <div
+          th:each="product : ${products}"
+          class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+        >
+          <img
+            th:src="${product.imgUrl}"
+            th:alt="${product.nama}"
+            class="w-full h-48 object-cover"
+          />
+          <div class="p-6">
+            <h3
+              class="text-xl font-bold text-gray-800 mb-2"
+              th:text="${product.nama}"
+            >
+              Nama Produk
+            </h3>
+            <p
+              class="text-gray-600 text-sm mb-4"
+              th:text="${product.deskripsi}"
+            >
+              Deskripsi produk
+            </p>
+            <div class="mt-4 flex justify-between items-center">
+              <span
+                class="text-sm text-gray-500"
+                th:text="${#dates.format(product.createdAt, 'dd MMM yyyy')}"
+                >Tanggal</span
+              >
+              <button
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+              >
+                Detail
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12">
+      <div class="container mx-auto px-6 py-8">
+        <div class="flex flex-col md:flex-row justify-between">
+          <div class="mb-6 md:mb-0">
+            <h3 class="text-lg font-bold mb-2">Aljabar Outdoor</h3>
+            <p class="text-gray-400">Penyedia peralatan outdoor terpercaya</p>
+          </div>
+          <div
+            class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-12"
+          >
+            <div>
+              <h4 class="text-lg font-semibold mb-2">Kontak</h4>
+              <p class="text-gray-400">Email: info@aljabaroutdoor.com</p>
+              <p class="text-gray-400">Phone: (123) 456-7890</p>
+            </div>
+            <div>
+              <h4 class="text-lg font-semibold mb-2">Ikuti Kami</h4>
+              <div class="flex space-x-4">
+                <a href="#" class="text-gray-400 hover:text-white">Instagram</a>
+                <a href="#" class="text-gray-400 hover:text-white">Facebook</a>
+                <a href="#" class="text-gray-400 hover:text-white">Twitter</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
