@@ -3,111 +3,224 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title th:text="${product.nama + ' | Detail Produk'}">Detail Produk</title>
+  <title th:text="${product.namaProduk + ' | Detail Produk'}">Detail Produk</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              600: '#2563eb',
+              700: '#1d4ed8',
+            },
+            secondary: {
+              600: '#059669',
+              700: '#047857',
+            },
+            accent: {
+              500: '#8b5cf6',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .product-image {
+      transition: transform 0.3s ease;
+    }
+    .product-image:hover {
+      transform: scale(1.05);
+    }
+    .stock-badge {
+      top: 1rem;
+      right: 1rem;
+    }
+  </style>
 </head>
 <body class="bg-gray-50">
   <div class="container mx-auto px-4 sm:px-6 py-8 max-w-6xl">
     <!-- Product Card -->
-    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
       <div class="flex flex-col md:flex-row">
         <!-- Product Image -->
-        <div class="md:w-2/5 p-6 flex items-center justify-center bg-gray-50">
-          <img th:src="${product.imgUrl}" th:alt="${product.nama}" 
-               class="w-full h-80 object-contain rounded-lg" />
+        <div class="md:w-2/5 p-6 flex items-center justify-center bg-gray-50 relative">
+          <img th:src="${product.imgUrl}" th:alt="${product.namaProduk}" 
+               class="product-image w-full h-80 object-contain rounded-lg" />
         </div>
         
         <!-- Product Details -->
         <div class="md:w-3/5 p-6 md:p-8">
-          <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2" th:text="${product.nama}">Nama Produk</h1>
-          <span class="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-2.5 py-0.5 rounded mb-4" 
-                th:text="${product.stok + ' tersedia'}">Stok</span>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2" th:text="${product.namaProduk}">Nama Produk</h1>
+          <div class="stock-badge inline-block bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md mb-2">
+            <span id="stockBadge" 
+                  th:data-stok-sewa="${product.stokSewa}"
+                  th:data-stok-jual="${product.stokJual}"
+                  th:text="${product.stokSewa + ' Tersedia (Sewa)'}"></span>
+          </div>
           
           <p class="text-gray-700 mb-6" th:text="${product.deskripsi}">Deskripsi produk</p>
           
           <!-- Price Section -->
-          <div class="mb-6">
+          <div class="mb-6 bg-gray-50 p-4 rounded-lg">
             <div class="flex items-center mb-4">
               <span class="text-gray-600 mr-3">Harga:</span>
               <span id="hargaProduk" 
                     class="text-2xl font-bold text-gray-800"
-                    th:data-harga-rental-per-hari="${product.hargaRentalPerHari}"
+                    th:data-harga-rental-per-hari="${product.hargaSewaPerHari}"
                     th:data-harga-jual="${product.hargaJual}">
-                <span th:text="${'Rp ' + #numbers.formatDecimal(product.hargaRentalPerHari, 0, 'COMMA', 2, 'POINT')}"></span>
+                <span th:text="${'Rp ' + #numbers.formatDecimal(product.hargaSewaPerHari, 0, 'COMMA', 2, 'POINT')}"></span>
               </span>
               <span id="priceLabel" class="ml-2 text-sm text-gray-500">/hari</span>
             </div>
             
-            <!-- Simplified Rent/Buy Buttons -->
-            <div class="flex gap-3 mb-6">
+            <!-- Rent/Buy Buttons -->
+            <div class="flex gap-3 mb-4">
               <button id="btnSewa" type="button" 
-                      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                Sewa
+                      class="flex-1 bg-primary-600 text-white px-4 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                <i class="fas fa-calendar-alt mr-2"></i> Sewa
               </button>
               <button id="btnBeli" type="button" 
-                      class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors">
-                Beli
+                      class="flex-1 bg-secondary-600 text-white px-4 py-3 rounded-lg hover:bg-secondary-700 transition-colors font-medium">
+                <i class="fas fa-shopping-cart mr-2"></i> Beli
               </button>
+            </div>
+            
+            <!-- Dynamic Stock Info -->
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              <div class="bg-white p-3 rounded border col-span-2">
+                <span class="text-gray-600 block">Kategori:</span>
+                <span class="font-semibold text-gray-800 capitalize" th:text="${product.kategori}"></span>
+              </div>
             </div>
           </div>
           
           <!-- Add to Cart Form -->
-          <form th:action="@{'/user/keranjang/add/' + ${product.idProduk}}" method="post" class="mb-4 flex items-center gap-2">
-            <input type="number" name="jumlah" min="1" value="1" class="w-20 px-2 py-1 border rounded" required />
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-              Tambah ke Keranjang
-            </button>
+          <form th:action="@{'/user/keranjang/add/' + ${product.idProduk}}" method="post" class="mb-6" id="addToCartForm">
+            <div class="flex items-center gap-3">
+              <div class="flex items-center border rounded-lg overflow-hidden">
+                <button type="button" class="px-3 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="decreaseQuantity()">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <input type="number" id="quantity" name="jumlah" min="1" value="1" class="w-16 text-center border-0 focus:ring-0" required />
+                <button type="button" class="px-3 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="increaseQuantity()">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+              <input type="hidden" id="actionType" name="actionType" value="sewa">
+              <button type="submit" class="flex-1 bg-accent-500 hover:bg-accent-600 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                <i class="fas fa-cart-plus mr-2"></i> Tambah ke Keranjang
+              </button>
+            </div>
           </form>
           
           <!-- Bottom Action Buttons -->
           <div class="flex justify-between items-center pt-4 border-t border-gray-200">
             <a href="/user/home" 
-               class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
+               class="text-primary-600 hover:text-primary-800 font-medium transition-colors flex items-center">
               <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
             </a>
-            <button id="btnCheckout" type="button"
-                    class="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition-colors">
-              <i class="fas fa-shopping-bag mr-2"></i> Checkout
-            </button>
+            <div class="flex gap-3">
+              <button id="btnCheckout" type="button"
+                      class="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium flex items-center">
+                <i class="fas fa-credit-card mr-2"></i> Checkout Sekarang
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
+  <span id="stokSewa" class="hidden" th:text="${product.stokSewa}"></span>
+  <span id="stokJual" class="hidden" th:text="${product.stokJual}"></span>
+
   <script>
+    // DOM Elements
     const btnSewa = document.getElementById('btnSewa');
     const btnBeli = document.getElementById('btnBeli');
     const btnCheckout = document.getElementById('btnCheckout');
     const hargaProduk = document.getElementById('hargaProduk');
     const priceLabel = document.getElementById('priceLabel');
+    const stockBadge = document.getElementById('stockBadge');
+    const stokJual = document.getElementById('stokJual');
+    const stokSewa = document.getElementById('stokSewa');
+    const actionType = document.getElementById('actionType');
+    const quantityInput = document.getElementById('quantity');
+    
+    // Product Data
     const hargaRental = hargaProduk.getAttribute('data-harga-rental-per-hari');
     const hargaJual = hargaProduk.getAttribute('data-harga-jual');
+    const stokJualValue = parseInt(stokJual.textContent);
+    const stokSewaValue = parseInt(stokSewa.textContent);
     
     // Format currency function
     function formatCurrency(amount) {
       return 'Rp ' + parseFloat(amount).toLocaleString('id-ID');
     }
     
+    // Quantity controls
+    function increaseQuantity() {
+      const currentValue = parseInt(quantityInput.value);
+      const maxStock = actionType.value === 'sewa' ? stokSewaValue : stokJualValue;
+      if (currentValue < maxStock) {
+        quantityInput.value = currentValue + 1;
+      }
+    }
+    
+    function decreaseQuantity() {
+      const currentValue = parseInt(quantityInput.value);
+      if (currentValue > 1) {
+        quantityInput.value = currentValue - 1;
+      }
+    }
+    
+    // Rent button click handler
     btnSewa.addEventListener('click', function() {
-      hargaProduk.textContent = formatCurrency(hargaRental);
+      hargaProduk.innerHTML = '<span>' + formatCurrency(hargaRental) + '</span>';
       priceLabel.textContent = '/hari';
-      btnSewa.classList.add('ring-2', 'ring-blue-300');
-      btnBeli.classList.remove('ring-2', 'ring-green-300');
+      stockBadge.textContent = stokSewaValue + ' Tersedia (Sewa)';
+      actionType.value = 'sewa';
+      
+      // Update button states
+      btnSewa.classList.add('ring-2', 'ring-primary-300', 'ring-offset-2');
+      btnBeli.classList.remove('ring-2', 'ring-secondary-300', 'ring-offset-2');
+      
+      // Update quantity max value
+      quantityInput.max = stokSewaValue;
+      if (parseInt(quantityInput.value) > stokSewaValue) {
+        quantityInput.value = stokSewaValue;
+      }
     });
     
+    // Buy button click handler
     btnBeli.addEventListener('click', function() {
-      hargaProduk.textContent = formatCurrency(hargaJual);
+      hargaProduk.innerHTML = '<span>' + formatCurrency(hargaJual) + '</span>';
       priceLabel.textContent = '';
-      btnBeli.classList.add('ring-2', 'ring-green-300');
-      btnSewa.classList.remove('ring-2', 'ring-blue-300');
+      stockBadge.textContent = stokJualValue + ' Tersedia (Beli)';
+      actionType.value = 'beli';
+      
+      // Update button states
+      btnBeli.classList.add('ring-2', 'ring-secondary-300', 'ring-offset-2');
+      btnSewa.classList.remove('ring-2', 'ring-primary-300', 'ring-offset-2');
+      
+      // Update quantity max value
+      quantityInput.max = stokJualValue;
+      if (parseInt(quantityInput.value) > stokJualValue) {
+        quantityInput.value = stokJualValue;
+      }
     });
 
+    // Checkout button click handler
     btnCheckout.addEventListener('click', function() {
-      // Add checkout functionality here
-      alert('Produk telah ditambahkan ke keranjang!');
+      // You can implement direct checkout functionality here
+      alert('Fitur checkout langsung akan segera tersedia!');
     });
+    
+    // Initialize with rent option selected
+    btnSewa.click();
   </script>
 </body>
 </html>

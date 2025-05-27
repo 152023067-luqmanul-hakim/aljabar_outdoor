@@ -95,27 +95,25 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-      <!-- Product Card -->
       <div th:each="product : ${products}" class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
         <a th:href="@{'/user/product/' + ${product.idProduk}}" class="block">
           <div class="relative">
-            <img th:src="${product.imgUrl}" th:alt="${product.nama}" class="w-full h-60 object-cover"/>
+            <img th:src="${product.imgUrl}" th:alt="${product.namaProduk}" class="w-full h-60 object-cover"/>
           </div>
           <div class="p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-2" th:text="${product.nama}">Nama Produk</h3>
-            <div class="flex items-center my-4">
-              <div class="absolute bg-primary-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                <span th:text="${product.stok}"></span> Tersedia
-              </div>
-            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2" th:text="${product.namaProduk}">Nama Produk</h3>
             <div class="space-y-2">
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Sewa/Hari:</span>
-                <span class="font-semibold text-primary-600" th:text="${'Rp ' + #numbers.formatDecimal(product.hargaRentalPerHari, 0, 'COMMA', 2, 'POINT')}"></span>
+                <span class="font-semibold text-primary-600" th:text="${'Rp ' + #numbers.formatDecimal(product.hargaSewaPerHari, 0, 'COMMA', 2, 'POINT')}"></span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Harga Beli:</span>
                 <span class="font-semibold text-secondary-600" th:text="${'Rp ' + #numbers.formatDecimal(product.hargaJual, 0, 'COMMA', 2, 'POINT')}"></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Kategori:</span>
+                <span class="font-semibold text-gray-700" th:text="${product.kategori}"></span>
               </div>
             </div>
           </div>

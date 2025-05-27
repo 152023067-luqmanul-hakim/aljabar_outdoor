@@ -1,85 +1,65 @@
 package com.uaspbo.aljabar_outdoor.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
-@Table(name = "products")
+@Table(name = "produk")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_produk")
     private Integer idProduk;
 
-    private String nama;
+    @Column(name = "nama_produk")
+    private String namaProduk;
+
+    @Column(name = "deskripsi")
     private String deskripsi;
 
-    @Column(name = "img_url", columnDefinition = "TEXT")
+    @Column(name = "harga_jual")
+    private BigDecimal hargaJual;
+
+    @Column(name = "harga_sewa_per_hari")
+    private BigDecimal hargaSewaPerHari;
+
+    @Column(name = "stok_jual")
+    private Integer stokJual;
+
+    @Column(name = "stok_sewa")
+    private Integer stokSewa;
+
+    @Column(name = "kategori")
+    private String kategori;
+
+    @Column(name = "img_url")
     private String imgUrl;
 
-    @Column(name = "created_at", updatable = false, insertable = false)
-    private java.sql.Timestamp createdAt;
-
-    private String kategori;
-    @Column(name = "harga_rental_per_hari")
-    private Integer hargaRentalPerHari;
-    @Column(name = "harga_jual")
-    private Integer hargaJual;
-    private Integer stok;
-
     // Getter & Setter
-    public Integer getIdProduk() {
-        return idProduk;
-    }
-    public void setIdProduk(Integer idProduk) {
-        this.idProduk = idProduk;
-    }
-    public String getNama() {
-        return nama;
-    }
-    public void setNama(String nama) {
-        this.nama = nama;
-    }
-    public String getDeskripsi() {
-        return deskripsi;
-    }
-    public void setDeskripsi(String deskripsi) {
-        this.deskripsi = deskripsi;
-    }
-    public String getImgUrl() {
-        return imgUrl;
-    }
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
-    public java.sql.Timestamp getCreatedAt() {
-        return createdAt;
-    }
-    public void setCreatedAt(java.sql.Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
+    public Integer getIdProduk() { return idProduk; }
+    public void setIdProduk(Integer idProduk) { this.idProduk = idProduk; }
 
-    public String getKategori() {
-        return kategori;
-    }
-    public void setKategori(String kategori) {
-        this.kategori = kategori;
-    }
-    public Integer getHargaRentalPerHari() {
-        return hargaRentalPerHari;
-    }
-    public void setHargaRentalPerHari(Integer hargaRentalPerHari) {
-        this.hargaRentalPerHari = hargaRentalPerHari;
-    }
-    public Integer getHargaJual() {
-        return hargaJual;
-    }
-    public void setHargaJual(Integer hargaJual) {
-        this.hargaJual = hargaJual;
-    }
-    public Integer getStok() {
-        return stok;
-    }
-    public void setStok(Integer stok) {
-        this.stok = stok;
-    }
+    public String getNamaProduk() { return namaProduk; }
+    public void setNamaProduk(String namaProduk) { this.namaProduk = namaProduk; }
+
+    public String getDeskripsi() { return deskripsi; }
+    public void setDeskripsi(String deskripsi) { this.deskripsi = deskripsi; }
+
+    public BigDecimal getHargaJual() { return hargaJual; }
+    public void setHargaJual(BigDecimal hargaJual) { this.hargaJual = hargaJual; }
+
+    public BigDecimal getHargaSewaPerHari() { return hargaSewaPerHari; }
+    public void setHargaSewaPerHari(BigDecimal hargaSewaPerHari) { this.hargaSewaPerHari = hargaSewaPerHari; }
+
+    public Integer getStokJual() { return stokJual; }
+    public void setStokJual(Integer stokJual) { this.stokJual = stokJual; }
+
+    public Integer getStokSewa() { return stokSewa; }
+    public void setStokSewa(Integer stokSewa) { this.stokSewa = stokSewa; }
+
+    public String getKategori() { return kategori; }
+    public void setKategori(String kategori) { this.kategori = kategori; }
+
+    public String getImgUrl() { return imgUrl; }
+    public void setImgUrl(String imgUrl) { this.imgUrl = imgUrl; }
 }

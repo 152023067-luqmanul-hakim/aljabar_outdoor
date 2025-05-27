@@ -6,63 +6,48 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "users")
 public class User {
-
-    public enum Role {
-        ADMIN,
-        USER
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_user")
     private Integer idUser;
 
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
+
+    @Column(name = "password", nullable = false)
     private String password;
-    private String nama;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @Column(name = "nama_lengkap")
+    private String namaLengkap;
 
-    @Column(name = "created_at", updatable = false, insertable = false)
-    private java.sql.Timestamp createdAt;
+    @Column(name = "alamat")
+    private String alamat;
+
+    @Column(name = "no_telepon")
+    private Integer noTelepon;
+
+    @Column(name = "role", nullable = false)
+    private String role;
 
     // Getter & Setter
-    public Integer getIdUser() {
-        return idUser;
-    }
-    public void setIdUser(Integer idUser) {
-        this.idUser = idUser;
-    }
-    public String getUsername() {
-        return username;
-    }
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    public String getPassword() {
-        return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public String getNama() {
-        return nama;
-    }
-    public void setNama(String nama) {
-        this.nama = nama;
-    }
-    public Role getRole() {
-        return role;
-    }
-    public void setRole(Role role) {
-        this.role = role;
-    }
-    public java.sql.Timestamp getCreatedAt() {
-        return createdAt;
-    }
-    public void setCreatedAt(java.sql.Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
+    public Integer getIdUser() { return idUser; }
+    public void setIdUser(Integer idUser) { this.idUser = idUser; }
 
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public String getNamaLengkap() { return namaLengkap; }
+    public void setNamaLengkap(String namaLengkap) { this.namaLengkap = namaLengkap; }
+
+    public String getAlamat() { return alamat; }
+    public void setAlamat(String alamat) { this.alamat = alamat; }
+
+    public Integer getNoTelepon() { return noTelepon; }
+    public void setNoTelepon(Integer noTelepon) { this.noTelepon = noTelepon; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.uaspbo.aljabar_outdoor.model.User;
 import com.uaspbo.aljabar_outdoor.repository.UserRepository;
@@ -36,8 +35,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public String processRegister(@ModelAttribute User user) {
-        // user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-        user.setRole(User.Role.USER); 
+        // Validasi username unik
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            return "redirect:/register?error";
+        }
+        // Set role default 'user' (string lowercase sesuai enum di DB)
+        user.setRole("user");
         userRepository.save(user);
         return "redirect:/login";
     }
