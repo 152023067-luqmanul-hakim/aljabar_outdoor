@@ -29,6 +29,9 @@ public class User {
     @Column(name = "role", nullable = false)
     private String role;
 
+    @Column(name = "created_at")
+    private java.time.LocalDateTime createdAt;
+
     // Getter & Setter
     public Integer getIdUser() { return idUser; }
     public void setIdUser(Integer idUser) { this.idUser = idUser; }
@@ -50,4 +53,7 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public java.time.LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(java.time.LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

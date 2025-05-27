@@ -31,9 +31,8 @@ public class Keranjang {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipe_aksi")
-    private TipeAksi tipeAksi; // "sewa" atau "beli"
+    private TipeAksi tipeAksi; 
 
-    // Getter & Setter
     public Integer getIdKeranjang() { return idKeranjang; }
     public void setIdKeranjang(Integer idKeranjang) { this.idKeranjang = idKeranjang; }
 
