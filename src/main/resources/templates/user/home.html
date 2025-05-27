@@ -35,7 +35,7 @@
           <span class="text-xl font-bold">Aljabar Outdoor</span>
         </div>
         <div class="flex items-center space-x-6">
-          <a href="#" class="hover:text-gray-200 font-medium flex items-center">
+          <a href="/user/home" class="hover:text-gray-200 font-medium flex items-center">
             <i class="fas fa-home mr-2"></i> Beranda
           </a>
           <a href="#" class="hover:text-gray-200 font-medium flex items-center">
@@ -44,11 +44,21 @@
           <a href="/user/keranjang" class="hover:text-gray-200 font-medium flex items-center">
             <i class="fas fa-shopping-cart mr-2"></i> Keranjang
           </a>
-          <form th:action="@{/profile}" method="post" class="inline">
-            <button type="submit" class="hover:text-gray-200 font-medium flex items-center">
-              <i class="fas fa-user-circle mr-2"></i> Profile
+          <div class="relative">
+            <button id="dropdownAkunBtn" type="button" class="hover:text-gray-200 font-medium flex items-center focus:outline-none">
+              <i class="fas fa-user-circle mr-2"></i> <span th:text="${#authentication.name}">Akun</span> <i class="fas fa-caret-down ml-1"></i>
             </button>
-          </form>
+            <div id="dropdownAkunMenu" class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2 z-20 hidden">
+              <a href="/user/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center">
+                <i class="fas fa-user mr-2"></i> Profil
+              </a>
+              <form th:action="@{/logout}" method="post">
+                <button type="submit" class="w-full text-left block px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center bg-transparent border-none cursor-pointer">
+                  <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -81,13 +91,21 @@
         <i class="fas fa-campground mr-3"></i> Produk Kami
       </h2>
       <div class="relative w-64">
-        <select class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent">
-          <option>Urutkan Berdasarkan</option>
-          <option>Harga Terendah</option>
-          <option>Harga Tertinggi</option>
-          <option>Terbaru</option>
-          <option>Terpopuler</option>
-        </select>
+        <form method="get" th:action="@{/user/home}" class="flex space-x-2">
+          <select name="sort" onchange="this.form.submit()" class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent">
+            <option value="" th:selected="${sort == null || sort == ''}">Urutkan Berdasarkan</option>
+            <option th:value="harga_terendah" th:selected="${sort == 'harga_terendah'}">Harga Terendah</option>
+            <option th:value="harga_tertinggi" th:selected="${sort == 'harga_tertinggi'}">Harga Tertinggi</option>
+            <option th:value="terbaru" th:selected="${sort == 'terbaru'}">Terbaru</option>
+            <option th:value="terpopuler" th:selected="${sort == 'terpopuler'}">Terpopuler</option>
+          </select>
+          <select name="kategori" onchange="this.form.submit()" class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent">
+            <option value="" th:selected="${kategori == null || kategori == ''}">Semua Kategori</option>
+            <option th:value="Pakaian" th:selected="${kategori == 'Pakaian'}">Pakaian</option>
+            <option th:value="Alat" th:selected="${kategori == 'Alat'}">Alat</option>
+            <option th:value="Aksesoris" th:selected="${kategori == 'Aksesoris'}">Aksesoris</option>
+          </select>
+        </form>
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
           <i class="fas fa-chevron-down"></i>
         </div>
@@ -203,5 +221,19 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    const btn = document.getElementById('dropdownAkunBtn');
+    const menu = document.getElementById('dropdownAkunMenu');
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      menu.classList.toggle('hidden');
+    });
+    document.addEventListener('click', function(e) {
+      if (!btn.contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    });
+  </script>
 </body>
 </html>

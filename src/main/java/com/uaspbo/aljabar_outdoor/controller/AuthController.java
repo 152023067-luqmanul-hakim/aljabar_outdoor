@@ -39,8 +39,8 @@ public class AuthController {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             return "redirect:/register?error";
         }
-        // Set role default 'user' (string lowercase sesuai enum di DB)
-        user.setRole("user");
+        // Set role default 'USER' (enum)
+        user.setRole(User.Role.USER);
         userRepository.save(user);
         return "redirect:/login";
     }

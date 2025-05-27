@@ -24,10 +24,15 @@ public class User {
     private String alamat;
 
     @Column(name = "no_telepon")
-    private Integer noTelepon;
+    private String noTelepon;
 
+    public enum Role {
+        ADMIN, USER
+    }
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private String role;
+    private Role role;
 
     @Column(name = "created_at")
     private java.time.LocalDateTime createdAt;
@@ -48,11 +53,11 @@ public class User {
     public String getAlamat() { return alamat; }
     public void setAlamat(String alamat) { this.alamat = alamat; }
 
-    public Integer getNoTelepon() { return noTelepon; }
-    public void setNoTelepon(Integer noTelepon) { this.noTelepon = noTelepon; }
+    public String getNoTelepon() { return noTelepon; }
+    public void setNoTelepon(String noTelepon) { this.noTelepon = noTelepon; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 
     public java.time.LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(java.time.LocalDateTime createdAt) { this.createdAt = createdAt; }

@@ -29,10 +29,15 @@ public class Product {
     @Column(name = "stok_sewa")
     private Integer stokSewa;
 
-    @Column(name = "kategori")
-    private String kategori;
+    public enum Kategori {
+        Pakaian, Alat, Aksesoris
+    }
 
-    @Column(name = "img_url")
+    @Column(name = "kategori")
+    @Enumerated(EnumType.STRING)
+    private Kategori kategori;
+
+    @Column(name = "img_url", columnDefinition = "TEXT")
     private String imgUrl;
 
     // Getter & Setter
@@ -57,8 +62,8 @@ public class Product {
     public Integer getStokSewa() { return stokSewa; }
     public void setStokSewa(Integer stokSewa) { this.stokSewa = stokSewa; }
 
-    public String getKategori() { return kategori; }
-    public void setKategori(String kategori) { this.kategori = kategori; }
+    public Kategori getKategori() { return kategori; }
+    public void setKategori(Kategori kategori) { this.kategori = kategori; }
 
     public String getImgUrl() { return imgUrl; }
     public void setImgUrl(String imgUrl) { this.imgUrl = imgUrl; }

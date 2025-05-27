@@ -42,9 +42,8 @@ public class TransaksiController {
             Transaksi transaksi = new Transaksi();
             transaksi.setUser(user);
             transaksi.setTanggalTransaksi(LocalDateTime.now());
-            transaksi.setStatus("PENDING");
+            transaksi.setStatus(Transaksi.Status.Diproses);
             transaksiRepository.save(transaksi);
-            // TODO: Insert ke detail transaksi (jual/peminjaman) sesuai jenis produk
             keranjangRepository.deleteAll(keranjangList);
             return "redirect:/user/transaksi/riwayat";
         }
