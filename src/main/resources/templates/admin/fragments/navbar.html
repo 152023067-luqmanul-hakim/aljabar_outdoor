@@ -48,9 +48,8 @@
               </svg>
               Kelola Produk
             </a>
-            <a
-              th:href="@{/admin/dataTransaksi}"
-              class="hover:bg-blue-700 transition rounded px-3 py-2 font-medium flex items-center gap-2"
+            <div
+              class="cursor-default bg-blue-700/60 rounded px-3 py-2 font-medium flex items-center gap-2"
             >
               <svg
                 class="w-5 h-5"
@@ -66,7 +65,47 @@
                 />
               </svg>
               Data Transaksi
-            </a>
+            </div>
+            <div class="ml-6 flex flex-col space-y-2">
+              <a
+                th:href="@{/admin/transaksi-penjualan}"
+                class="hover:bg-blue-700 transition rounded px-3 py-2 font-medium flex items-center gap-2 text-sm"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3 10h2l1 2h10l1-2h2"
+                  />
+                </svg>
+                Transaksi Penjualan
+              </a>
+              <a
+                th:href="@{/admin/transaksi-penyewaan}"
+                class="hover:bg-blue-700 transition rounded px-3 py-2 font-medium flex items-center gap-2 text-sm"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8 17l4 4 4-4m-4-5v9"
+                  />
+                </svg>
+                Transaksi Penyewaan
+              </a>
+            </div>
           </div>
         </div>
         <div>

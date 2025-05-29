@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.uaspbo.aljabar_outdoor.model.Product;
@@ -84,12 +85,42 @@ public class AdminController {
         return "redirect:/admin/dataProduct";
     }
 
-    @GetMapping("/dataTransaksi")
-    public String showDataTransaksi(Model model) {
-        List<Transaksi> transaksiJual = transaksiRepository.findByJenisTransaksi(Transaksi.JenisTransaksi.Beli);
-        List<Transaksi> transaksiSewa = transaksiRepository.findByJenisTransaksi(Transaksi.JenisTransaksi.Sewa);
-        model.addAttribute("transaksiJual", transaksiJual);
-        model.addAttribute("transaksiSewa", transaksiSewa);
-        return "admin/dataTransaksi";
+    @GetMapping("/transaksi-penjualan")
+    public String transaksiPenjualan(Model model) {
+        model.addAttribute("diproses", transaksiRepository.findByJenisTransaksiAndStatus(
+            Transaksi.JenisTransaksi.Beli, Transaksi.StatusTransaksi.Diproses));
+        model.addAttribute("diterima", transaksiRepository.findByJenisTransaksiAndStatus(
+            Transaksi.JenisTransaksi.Beli, Transaksi.StatusTransaksi.Diterima));
+        model.addAttribute("dibatalkan", transaksiRepository.findByJenisTransaksiAndStatus(
+            Transaksi.JenisTransaksi.Beli, Transaksi.StatusTransaksi.Dibatalkan));
+        return "admin/transaksiPenjualan";
+    }
+
+    @GetMapping("/transaksi-penyewaan")
+    public String transaksiPenyewaan(Model model) {
+        model.addAttribute("diproses", transaksiRepository.findByJenisTransaksiAndStatus(
+            Transaksi.JenisTransaksi.Sewa, Transaksi.StatusTransaksi.Diproses));
+        model.addAttribute("diterima", transaksiRepository.findByJenisTransaksiAndStatus(
+            Transaksi.JenisTransaksi.Sewa, Transaksi.StatusTransaksi.Diterima));
+        model.addAttribute("dibatalkan", transaksiRepository.findByJenisTransaksiAndStatus(
+            Transaksi.JenisTransaksi.Sewa, Transaksi.StatusTransaksi.Dibatalkan));
+        return "admin/transaksiPenyewaan";
+    }
+
+    @PostMapping("/transaksi/update-status/{id}")
+    public String updateTransaksiStatus(
+            @PathVariable("id") Integer id,
+            @RequestParam("status") Transaksi.StatusTransaksi status,
+            RedirectAttributes redirectAttributes) {
+        
+        Transaksi transaksi = transaksiRepository.findById(id).orElse(null);
+        if (transaksi != null) {
+            transaksi.setStatus(status);
+            transaksiRepository.save(transaksi);
+            redirectAttributes.addFlashAttribute("success", "Status transaksi berhasil diupdate");
+        }
+        
+        return "redirect:" + (transaksi.getJenisTransaksi() == Transaksi.JenisTransaksi.Beli ? 
+                            "/admin/transaksi-penjualan" : "/admin/transaksi-penyewaan");
     }
 }

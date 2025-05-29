@@ -10,4 +10,8 @@ public interface TransaksiRepository extends JpaRepository<Transaksi, Integer> {
     List<Transaksi> findByUserIdUser(Integer userId);
     long countByJenisTransaksi(Transaksi.JenisTransaksi jenisTransaksi);
     List<Transaksi> findByJenisTransaksi(Transaksi.JenisTransaksi jenisTransaksi);
+    List<Transaksi> findByJenisTransaksiAndStatus(
+        Transaksi.JenisTransaksi jenisTransaksi,
+        Transaksi.StatusTransaksi status
+    );
 }
