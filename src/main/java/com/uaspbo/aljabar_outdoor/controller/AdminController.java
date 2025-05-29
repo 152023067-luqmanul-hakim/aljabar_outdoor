@@ -2,28 +2,45 @@ package com.uaspbo.aljabar_outdoor.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.uaspbo.aljabar_outdoor.model.Product;
+import com.uaspbo.aljabar_outdoor.model.Transaksi;
 import com.uaspbo.aljabar_outdoor.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.uaspbo.aljabar_outdoor.repository.TransaksiRepository;
 
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
-    @GetMapping("/dashboard")
-    public String adminDashboard() {
-        return "admin/dashboard";
-    }   
-
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private TransaksiRepository transaksiRepository;
+
+    @GetMapping("/dashboard")
+    public String adminDashboard(Model model) {
+        long jumlahProduk = productRepository.count();
+        long jumlahTransaksi = transaksiRepository.count();
+        long jumlahJual = transaksiRepository.countByJenisTransaksi(Transaksi.JenisTransaksi.Beli);
+        long jumlahSewa = transaksiRepository.countByJenisTransaksi(Transaksi.JenisTransaksi.Sewa);
+
+        model.addAttribute("jumlahProduk", jumlahProduk);
+        model.addAttribute("jumlahTransaksi", jumlahTransaksi);
+        model.addAttribute("jumlahJual", jumlahJual);
+        model.addAttribute("jumlahSewa", jumlahSewa);
+        return "admin/dashboard";
+    }   
 
     @GetMapping("/dataProduct")
     public String showProductList(Model model) {
@@ -36,5 +53,43 @@ public class AdminController {
     public String addProduct(Product product) {
         productRepository.save(product);
         return "redirect:/admin/dataProduct";
+    }
+
+    @PostMapping("/dataProduct/delete/{id}")
+    public String deleteProduct(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+        productRepository.deleteById(id);
+        redirectAttributes.addFlashAttribute("success", "Produk berhasil dihapus.");
+        return "redirect:/admin/dataProduct";
+    }
+
+    @PostMapping("/dataProduct/edit/{id}")
+    public String editProduct(
+            @PathVariable("id") Integer id,
+            @ModelAttribute Product product,
+            RedirectAttributes redirectAttributes
+    ) {
+        Product existing = productRepository.findById(id).orElse(null);
+        if (existing != null) {
+            existing.setNamaProduk(product.getNamaProduk());
+            existing.setDeskripsi(product.getDeskripsi());
+            existing.setHargaJual(product.getHargaJual());
+            existing.setHargaSewaPerHari(product.getHargaSewaPerHari());
+            existing.setStokJual(product.getStokJual());
+            existing.setStokSewa(product.getStokSewa());
+            existing.setKategori(product.getKategori());
+            existing.setImgUrl(product.getImgUrl());
+            productRepository.save(existing);
+            redirectAttributes.addFlashAttribute("success", "Produk berhasil diupdate.");
+        }
+        return "redirect:/admin/dataProduct";
+    }
+
+    @GetMapping("/dataTransaksi")
+    public String showDataTransaksi(Model model) {
+        List<Transaksi> transaksiJual = transaksiRepository.findByJenisTransaksi(Transaksi.JenisTransaksi.Beli);
+        List<Transaksi> transaksiSewa = transaksiRepository.findByJenisTransaksi(Transaksi.JenisTransaksi.Sewa);
+        model.addAttribute("transaksiJual", transaksiJual);
+        model.addAttribute("transaksiSewa", transaksiSewa);
+        return "admin/dataTransaksi";
     }
 }

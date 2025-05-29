@@ -26,8 +26,12 @@ public class User {
     @Column(name = "no_telepon")
     private Integer noTelepon;
 
-    @Column(name = "role", nullable = false)
-    private String role;
+    public enum Role {
+        ADMIN, USER
+    }
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(name = "created_at")
     private java.time.LocalDateTime createdAt;
@@ -51,8 +55,8 @@ public class User {
     public Integer getNoTelepon() { return noTelepon; }
     public void setNoTelepon(Integer noTelepon) { this.noTelepon = noTelepon; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 
     public java.time.LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(java.time.LocalDateTime createdAt) { this.createdAt = createdAt; }

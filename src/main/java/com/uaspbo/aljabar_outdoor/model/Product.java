@@ -2,6 +2,7 @@ package com.uaspbo.aljabar_outdoor.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "produk")
@@ -29,11 +30,19 @@ public class Product {
     @Column(name = "stok_sewa")
     private Integer stokSewa;
 
+    public enum Kategori {
+        Alat, Pakaian, Aksesori
+    }
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "kategori")
-    private String kategori;
+    private Kategori kategori;
 
     @Column(name = "img_url")
     private String imgUrl;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     // Getter & Setter
     public Integer getIdProduk() { return idProduk; }
@@ -57,9 +66,13 @@ public class Product {
     public Integer getStokSewa() { return stokSewa; }
     public void setStokSewa(Integer stokSewa) { this.stokSewa = stokSewa; }
 
-    public String getKategori() { return kategori; }
-    public void setKategori(String kategori) { this.kategori = kategori; }
+    public Kategori getKategori() { return kategori; }
+    public void setKategori(Kategori kategori) { this.kategori = kategori; }
 
     public String getImgUrl() { return imgUrl; }
     public void setImgUrl(String imgUrl) { this.imgUrl = imgUrl; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
 }
