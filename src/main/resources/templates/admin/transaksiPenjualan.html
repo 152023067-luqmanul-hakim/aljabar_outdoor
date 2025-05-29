@@ -91,11 +91,11 @@
             >
               <div class="flex items-center justify-between">
                 <div>
-                  <span class="font-semibold">ID:</span>
+                  <span class="font-semibold">ID :</span>
                   <span th:text="${trx.idTransaksi}"></span>
-                  <span class="ml-2 font-semibold">User:</span>
+                  <span class="ml-2 font-semibold">User :</span>
                   <span th:text="${trx.user.username}"></span>
-                  <span class="ml-2 font-semibold">Tanggal:</span>
+                  <span class="ml-2 font-semibold">Tanggal :</span>
                   <span
                     th:text="${#temporals.format(trx.tanggalTransaksi, 'dd-MM-yyyy HH:mm')}"
                   ></span>
