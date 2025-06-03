@@ -28,7 +28,7 @@
                 <tbody>
                     <tr th:each="trx, iterStat : ${transaksiList}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${iterStat.index + 1}"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${#temporals.format(trx.tanggal, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${#temporals.format(trx.tanggalTransaksi, 'dd/MM/yyyy HH:mm')}"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" th:text="${trx.status}"></td>
                     </tr>
                 </tbody>

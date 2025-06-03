@@ -1,7 +1,17 @@
 package com.uaspbo.aljabar_outdoor.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "transaksi")
@@ -19,6 +29,10 @@ public class Transaksi {
         Sewa, Beli
     }
 
+    public enum StatusTransaksi {
+        Diproses, Dibatalkan, Diterima
+    }
+
     @Enumerated(EnumType.STRING)
     @Column(name = "jenis_transaksi")
     private JenisTransaksi jenisTransaksi;
@@ -26,16 +40,9 @@ public class Transaksi {
     @Column(name = "tanggal_transaksi")
     private LocalDateTime tanggalTransaksi;
 
-    public enum Status {
-        Diproses, Dibatalkan, Diterima
-    }
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private Status status;
-
-    @Column(name = "total")
-    private java.math.BigDecimal total;
+    private StatusTransaksi status;
 
     // Getter & Setter
     public Integer getIdTransaksi() { return idTransaksi; }
@@ -50,9 +57,6 @@ public class Transaksi {
     public LocalDateTime getTanggalTransaksi() { return tanggalTransaksi; }
     public void setTanggalTransaksi(LocalDateTime tanggalTransaksi) { this.tanggalTransaksi = tanggalTransaksi; }
 
-    public Status getStatus() { return status; }
-    public void setStatus(Status status) { this.status = status; }
-
-    public java.math.BigDecimal getTotal() { return total; }
-    public void setTotal(java.math.BigDecimal total) { this.total = total; }
+    public StatusTransaksi getStatus() { return status; }
+    public void setStatus(StatusTransaksi status) { this.status = status; }
 }

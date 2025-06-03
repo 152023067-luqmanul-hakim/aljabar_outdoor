@@ -42,7 +42,7 @@ public class TransaksiController {
             Transaksi transaksi = new Transaksi();
             transaksi.setUser(user);
             transaksi.setTanggalTransaksi(LocalDateTime.now());
-            transaksi.setStatus(Transaksi.Status.Diproses);
+            transaksi.setStatus(Transaksi.StatusTransaksi.Diproses);
             transaksiRepository.save(transaksi);
             keranjangRepository.deleteAll(keranjangList);
             return "redirect:/user/transaksi/riwayat";
