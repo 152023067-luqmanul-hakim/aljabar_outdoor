@@ -51,7 +51,12 @@ public class KeranjangController {
     }
 
     @PostMapping("/add/{productId}")
-    public String addToKeranjang(@PathVariable Integer productId, @RequestParam Integer jumlah, @RequestParam String actionType, Principal principal, Model model) {
+    public String addToKeranjang(
+        @PathVariable("productId") Integer productId,
+        @RequestParam("jumlah") Integer jumlah,
+        @RequestParam("actionType") String actionType,
+        Principal principal,
+        Model model) {
         Optional<User> optionalUser = userRepository.findByUsername(principal.getName());
         Optional<Product> optionalProduct = productRepository.findById(productId);
 
@@ -99,7 +104,7 @@ public class KeranjangController {
     }
 
     @PostMapping("/remove/{id}")
-    public String removeFromKeranjang(@PathVariable Integer id) {
+    public String removeFromKeranjang(@PathVariable("id") Integer id) {
         keranjangRepository.deleteById(id);
         return "redirect:/user/keranjang";
     }
@@ -116,7 +121,7 @@ public class KeranjangController {
     }
 
     @PostMapping("/update/{idKeranjang}")
-    public String updateJumlahKeranjang(@PathVariable Integer idKeranjang, @RequestParam String action, Principal principal) {
+    public String updateJumlahKeranjang(@PathVariable("idKeranjang") Integer idKeranjang, @RequestParam("action") String action, Principal principal) {
         Optional<Keranjang> optionalKeranjang = keranjangRepository.findById(idKeranjang);
         if (optionalKeranjang.isPresent()) {
             Keranjang keranjang = optionalKeranjang.get();

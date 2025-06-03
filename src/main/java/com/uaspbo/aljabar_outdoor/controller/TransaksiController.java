@@ -44,7 +44,6 @@ public class TransaksiController {
             transaksi.setTanggalTransaksi(LocalDateTime.now());
             transaksi.setStatus(Transaksi.StatusTransaksi.Diproses);
             transaksiRepository.save(transaksi);
-            // TODO: Insert ke detail transaksi (jual/peminjaman) sesuai jenis produk
             keranjangRepository.deleteAll(keranjangList);
             return "redirect:/user/transaksi/riwayat";
         }
