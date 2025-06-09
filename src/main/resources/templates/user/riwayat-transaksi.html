@@ -1,39 +1,86 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Riwayat Transaksi</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
+      <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                600: "#2563eb",
+                700: "#1d4ed8",
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-gray-50">
+    <div th:replace="user/fragments/navbar :: navbar"></div>
+
     <div class="container mx-auto px-4 py-8 max-w-4xl">
-        <h1 class="text-2xl font-bold mb-6">Riwayat Transaksi</h1>
-        <div th:if="${#lists.isEmpty(transaksiList)}" class="bg-white rounded-xl shadow-sm p-8 text-center">
-            <i class="fas fa-receipt text-5xl text-gray-300 mb-4"></i>
-            <h2 class="text-xl font-medium text-gray-600 mb-2">Belum ada transaksi</h2>
-            <a href="/user/home" class="inline-block bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
-            </a>
-        </div>
-        <div th:unless="${#lists.isEmpty(transaksiList)}">
-            <table class="min-w-full divide-y divide-gray-200 bg-white rounded-xl shadow-sm">
-                <thead>
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="trx, iterStat : ${transaksiList}">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${iterStat.index + 1}"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${#temporals.format(trx.tanggalTransaksi, 'dd/MM/yyyy HH:mm')}"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" th:text="${trx.status}"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+      <h1 class="text-2xl font-bold mb-6">Riwayat Transaksi</h1>
+      <div
+        th:if="${#lists.isEmpty(transaksiList)}"
+        class="bg-white rounded-xl shadow-sm p-8 text-center"
+      >
+        <i class="fas fa-receipt text-5xl text-gray-300 mb-4"></i>
+        <h2 class="text-xl font-medium text-gray-600 mb-2">
+          Belum ada transaksi
+        </h2>
+        <a
+          href="/user/home"
+          class="inline-block bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+        >
+          <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
+        </a>
+      </div>
+      <div th:unless="${#lists.isEmpty(transaksiList)}">
+        <table
+          class="min-w-full divide-y divide-gray-200 bg-white rounded-xl shadow-sm"
+        >
+          <thead>
+            <tr>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              >
+                No
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              >
+                Tanggal
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              >
+                Status
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="trx, iterStat : ${transaksiList}">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                th:text="${iterStat.index + 1}"
+              ></td>
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                th:text="${#temporals.format(trx.tanggalTransaksi, 'dd/MM/yyyy HH:mm')}"
+              ></td>
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
+                th:text="${trx.status}"
+              ></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-</body>
+  </body>
 </html>

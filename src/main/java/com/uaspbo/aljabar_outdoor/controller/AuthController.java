@@ -39,6 +39,7 @@ public class AuthController {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             return "redirect:/register?error";
         }
+        user.setRole(User.Role.USER); 
         userRepository.save(user);
         return "redirect:/login";
     }

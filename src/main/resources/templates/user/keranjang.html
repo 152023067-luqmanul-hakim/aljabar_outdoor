@@ -1,140 +1,269 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Keranjang Saya</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                        }
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                600: "#2563eb",
+                700: "#1d4ed8",
+              },
+            },
+          },
+        },
+      };
     </script>
-</head>
-<body class="bg-gray-50">
+  </head>
+  <body class="bg-gray-50">
+    <div th:replace="user/fragments/navbar :: navbar"></div>
+
     <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <div class="flex items-center justify-between mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-shopping-cart mr-3 text-primary-600"></i> Keranjang Saya
-            </h1>
-            <a href="/user/home" class="text-primary-600 hover:text-primary-800 font-medium">
-                <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
-            </a>
-        </div>
+      <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 flex items-center">
+          <i class="fas fa-shopping-cart mr-3 text-primary-600"></i> Keranjang
+          Saya
+        </h1>
+        <a
+          href="/user/home"
+          class="text-primary-600 hover:text-primary-800 font-medium"
+        >
+          <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
+        </a>
+      </div>
 
-        <div th:if="${#lists.isEmpty(keranjangList)}" class="bg-white rounded-xl shadow-sm p-8 text-center">
-            <i class="fas fa-shopping-cart text-5xl text-gray-300 mb-4"></i>
-            <h2 class="text-xl font-medium text-gray-600 mb-2">Keranjang Anda kosong</h2>
-            <p class="text-gray-500 mb-6">Tambahkan produk untuk memulai belanja</p>
-            <a href="/user/home" class="inline-block bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors">
-                <i class="fas fa-plus mr-2"></i> Tambah Produk
-            </a>
-        </div>
+      <div
+        th:if="${#lists.isEmpty(keranjangList)}"
+        class="bg-white rounded-xl shadow-sm p-8 text-center"
+      >
+        <i class="fas fa-shopping-cart text-5xl text-gray-300 mb-4"></i>
+        <h2 class="text-xl font-medium text-gray-600 mb-2">
+          Keranjang Anda kosong
+        </h2>
+        <p class="text-gray-500 mb-6">Tambahkan produk untuk memulai belanja</p>
+        <a
+          href="/user/home"
+          class="inline-block bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+        >
+          <i class="fas fa-plus mr-2"></i> Tambah Produk
+        </a>
+      </div>
 
-        <div th:unless="${#lists.isEmpty(keranjangList)}">
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produk</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipe</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
-                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr th:each="item, iterStat : ${keranjangList}">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${iterStat.index + 1}"></td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
-                                            <img class="h-10 w-10 rounded-full" th:src="${item.product.imgUrl}" th:alt="${item.product.namaProduk}">
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900" th:text="${item.product.namaProduk}"></div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).SEWA}" class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded font-semibold">Sewa</span>
-                                    <span th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).BELI}" class="bg-green-100 text-green-800 px-2 py-1 rounded font-semibold">Beli</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <form th:action="@{'/user/keranjang/update/' + ${item.idKeranjang}}" method="post" class="flex items-center">
-                                            <input type="hidden" name="tipeAksi" th:value="${item.tipeAksi}" />
-                                            <button type="submit" name="action" value="decrement" class="text-gray-500 hover:text-gray-700 px-2">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                            <span class="mx-2 text-sm text-gray-700" th:text="${item.jumlah}"></span>
-                                            <button type="submit" name="action" value="increment" class="text-gray-500 hover:text-gray-700 px-2">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <span th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).SEWA}" th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaSewaPerHari, 0, 'COMMA', 2, 'POINT')}"></span>
-                                    <span th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).BELI}" th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaJual, 0, 'COMMA', 2, 'POINT')}"></span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    <span th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).SEWA}" th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaSewaPerHari * item.jumlah, 0, 'COMMA', 2, 'POINT')}"></span>
-                                    <span th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).BELI}" th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaJual * item.jumlah, 0, 'COMMA', 2, 'POINT')}"></span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <form th:action="@{'/user/keranjang/remove/' + ${item.idKeranjang}}" method="post">
-                                        <button type="submit" class="text-red-600 hover:text-red-900">
-                                            <i class="fas fa-trash-alt"></i> Hapus
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
-                <div class="flex justify-between items-center">
-                    <form th:action="@{'/user/keranjang/clear'}" method="post">
-                        <button type="submit" class="text-red-600 hover:text-red-800 font-medium">
-                            <i class="fas fa-trash-alt mr-2"></i> Kosongkan Keranjang
-                        </button>
-                    </form>
-                    <div class="text-right">
-                        <h3 class="text-lg font-medium text-gray-900">Total: 
-                            <span th:text="${'Rp' + #numbers.formatDecimal(totalHarga, 0, 'COMMA', 2, 'POINT')}"></span>
-                        </h3>
-                        <p class="text-sm text-gray-500 mt-1">Termasuk semua pajak</p>
+      <div th:unless="${#lists.isEmpty(keranjangList)}">
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    No
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Produk
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Tipe
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Jumlah
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Harga
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Subtotal
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr th:each="item, iterStat : ${keranjangList}">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    th:text="${iterStat.index + 1}"
+                  ></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <img
+                          class="h-10 w-10 rounded-full"
+                          th:src="${item.product.imgUrl}"
+                          th:alt="${item.product.namaProduk}"
+                        />
+                      </div>
+                      <div class="ml-4">
+                        <div
+                          class="text-sm font-medium text-gray-900"
+                          th:text="${item.product.namaProduk}"
+                        ></div>
+                      </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="flex justify-between">
-                <a href="/user/home" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                    <i class="fas fa-arrow-left mr-2"></i> Lanjutkan Belanja
-                </a>
-                <form th:action="@{'/user/transaksi/checkout'}" method="post" class="inline-flex">
-                    <button type="submit" class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700">
-                        Proses Checkout <i class="fas fa-arrow-right ml-2"></i>
-                    </button>
-                </form>
-            </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span
+                      th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).SEWA}"
+                      class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded font-semibold"
+                      >Sewa</span
+                    >
+                    <span
+                      th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).BELI}"
+                      class="bg-green-100 text-green-800 px-2 py-1 rounded font-semibold"
+                      >Beli</span
+                    >
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <form
+                        th:action="@{'/user/keranjang/update/' + ${item.idKeranjang}}"
+                        method="post"
+                        class="flex items-center"
+                      >
+                        <input
+                          type="hidden"
+                          name="tipeAksi"
+                          th:value="${item.tipeAksi}"
+                        />
+                        <button
+                          type="submit"
+                          name="action"
+                          value="decrement"
+                          class="text-gray-500 hover:text-gray-700 px-2"
+                        >
+                          <i class="fas fa-minus"></i>
+                        </button>
+                        <span
+                          class="mx-2 text-sm text-gray-700"
+                          th:text="${item.jumlah}"
+                        ></span>
+                        <button
+                          type="submit"
+                          name="action"
+                          value="increment"
+                          class="text-gray-500 hover:text-gray-700 px-2"
+                        >
+                          <i class="fas fa-plus"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <span
+                      th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).SEWA}"
+                      th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaSewaPerHari, 0, 'COMMA', 2, 'POINT')}"
+                    ></span>
+                    <span
+                      th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).BELI}"
+                      th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaJual, 0, 'COMMA', 2, 'POINT')}"
+                    ></span>
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                  >
+                    <span
+                      th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).SEWA}"
+                      th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaSewaPerHari * item.jumlah, 0, 'COMMA', 2, 'POINT')}"
+                    ></span>
+                    <span
+                      th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).BELI}"
+                      th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaJual * item.jumlah, 0, 'COMMA', 2, 'POINT')}"
+                    ></span>
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                  >
+                    <form
+                      th:action="@{'/user/keranjang/remove/' + ${item.idKeranjang}}"
+                      method="post"
+                    >
+                      <button
+                        type="submit"
+                        class="text-red-600 hover:text-red-900"
+                      >
+                        <i class="fas fa-trash-alt"></i> Hapus
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+          <div class="flex justify-between items-center">
+            <form th:action="@{'/user/keranjang/clear'}" method="post">
+              <button
+                type="submit"
+                class="text-red-600 hover:text-red-800 font-medium"
+              >
+                <i class="fas fa-trash-alt mr-2"></i> Kosongkan Keranjang
+              </button>
+            </form>
+            <div class="text-right">
+              <h3 class="text-lg font-medium text-gray-900">
+                Total:
+                <span
+                  th:text="${'Rp' + #numbers.formatDecimal(totalHarga, 0, 'COMMA', 2, 'POINT')}"
+                ></span>
+              </h3>
+              <p class="text-sm text-gray-500 mt-1">Termasuk semua pajak</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between">
+          <a
+            href="/user/home"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          >
+            <i class="fas fa-arrow-left mr-2"></i> Lanjutkan Belanja
+          </a>
+          <form
+            th:action="@{'/user/transaksi/checkout'}"
+            method="post"
+            class="inline-flex"
+          >
+            <button
+              type="submit"
+              class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700"
+            >
+              Proses Checkout <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
-</body>
+  </body>
 </html>
