@@ -2,7 +2,6 @@ package com.uaspbo.aljabar_outdoor.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "detail_peminjaman")
@@ -25,12 +24,6 @@ public class DetailTransaksiPeminjaman {
     @Column(name = "harga_per_hari")
     private BigDecimal hargaPerHari;
 
-    @Column(name = "tanggal_mulai")
-    private LocalDate tanggalMulai;
-
-    @Column(name = "tanggal_selesai")
-    private LocalDate tanggalSelesai;
-
     @Column(name = "subtotal")
     private BigDecimal subtotal;
 
@@ -49,12 +42,6 @@ public class DetailTransaksiPeminjaman {
 
     public BigDecimal getHargaPerHari() { return hargaPerHari; }
     public void setHargaPerHari(BigDecimal hargaPerHari) { this.hargaPerHari = hargaPerHari; }
-
-    public LocalDate getTanggalMulai() { return tanggalMulai; }
-    public void setTanggalMulai(LocalDate tanggalMulai) { this.tanggalMulai = tanggalMulai; }
-
-    public LocalDate getTanggalSelesai() { return tanggalSelesai; }
-    public void setTanggalSelesai(LocalDate tanggalSelesai) { this.tanggalSelesai = tanggalSelesai; }
 
     public BigDecimal getSubtotal() { return subtotal; }
     public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }

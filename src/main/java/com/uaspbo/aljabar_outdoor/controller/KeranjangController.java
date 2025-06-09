@@ -35,16 +35,19 @@ public class KeranjangController {
             User user = optionalUser.get();
             List<Keranjang> keranjangList = keranjangRepository.findByUserIdUser(user.getIdUser());
             model.addAttribute("keranjangList", keranjangList);
-            // Hitung total harga
-            java.math.BigDecimal totalHarga = java.math.BigDecimal.ZERO;
+            // Hitung total harga beli dan sewa secara terpisah
+            java.math.BigDecimal totalHargaBeli = java.math.BigDecimal.ZERO;
+            java.math.BigDecimal totalHargaSewa = java.math.BigDecimal.ZERO;
             for (Keranjang item : keranjangList) {
                 if (item.getTipeAksi() == Keranjang.TipeAksi.SEWA) {
-                    totalHarga = totalHarga.add(item.getProduct().getHargaSewaPerHari().multiply(java.math.BigDecimal.valueOf(item.getJumlah())));
-                } else {
-                    totalHarga = totalHarga.add(item.getProduct().getHargaJual().multiply(java.math.BigDecimal.valueOf(item.getJumlah())));
+                    totalHargaSewa = totalHargaSewa.add(item.getProduct().getHargaSewaPerHari().multiply(java.math.BigDecimal.valueOf(item.getJumlah())));
+                } else if (item.getTipeAksi() == Keranjang.TipeAksi.BELI) {
+                    totalHargaBeli = totalHargaBeli.add(item.getProduct().getHargaJual().multiply(java.math.BigDecimal.valueOf(item.getJumlah())));
                 }
             }
-            model.addAttribute("totalHarga", totalHarga);
+            model.addAttribute("totalHargaBeli", totalHargaBeli);
+            model.addAttribute("totalHargaSewa", totalHargaSewa);
+            model.addAttribute("user", user); // Tambahkan user ke model
             return "user/keranjang";
         }
         return "redirect:/login?error=userNotFound";
@@ -73,9 +76,9 @@ public class KeranjangController {
 
             int stokTersedia = 0;
             if (tipeAksi == Keranjang.TipeAksi.SEWA) {
-                stokTersedia = product.getStokSewa();
+                stokTersedia = product.getStokSewa() != null ? product.getStokSewa() : 0;
             } else if (tipeAksi == Keranjang.TipeAksi.BELI) {
-                stokTersedia = product.getStokJual();
+                stokTersedia = product.getStokJual() != null ? product.getStokJual() : 0;
             }
             if (jumlah <= 0 || jumlah > stokTersedia) {
                 model.addAttribute("error", "Jumlah tidak valid atau stok tidak cukup.");
@@ -110,12 +113,22 @@ public class KeranjangController {
     }
 
     @PostMapping("/clear")
-    public String clearKeranjang(Principal principal) {
+    public String clearKeranjang(Principal principal, @RequestParam(value = "tipeAksi", required = false) String tipeAksi) {
         Optional<User> optionalUser = userRepository.findByUsername(principal.getName());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            List<Keranjang> keranjangList = keranjangRepository.findByUserIdUser(user.getIdUser());
-            keranjangRepository.deleteAll(keranjangList);
+            if (tipeAksi == null) {
+                // Hapus semua
+                List<Keranjang> keranjangList = keranjangRepository.findByUserIdUser(user.getIdUser());
+                keranjangRepository.deleteAll(keranjangList);
+            } else {
+                // Hapus berdasarkan tipeAksi
+                List<Keranjang> keranjangList = keranjangRepository.findByUserIdUser(user.getIdUser());
+                List<Keranjang> filtered = keranjangList.stream()
+                        .filter(k -> k.getTipeAksi().name().equalsIgnoreCase(tipeAksi))
+                        .toList();
+                keranjangRepository.deleteAll(filtered);
+            }
         }
         return "redirect:/user/keranjang";
     }

@@ -6,24 +6,27 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "transaksi_jual")
 public class TransaksiJual extends Transaksi {
-    @ManyToOne
-    @JoinColumn(name = "produk_id", referencedColumnName = "id_produk")
-    private Product product;
-
-    @Column(name = "harga_satuan")
-    private BigDecimal hargaSatuan;
 
     @OneToMany(mappedBy = "transaksiJual", cascade = CascadeType.ALL)
     private java.util.List<DetailTransaksiJual> detailList;
 
-    // Getter & Setter
-    public Product getProduct() { return product; }
-    public void setProduct(Product product) { this.product = product; }
+    @Column(name = "total")
+    private BigDecimal total;
 
-    public BigDecimal getHargaSatuan() { return hargaSatuan; }
-    public void setHargaSatuan(BigDecimal hargaSatuan) { this.hargaSatuan = hargaSatuan; }
+    public enum MetodePembayaran {
+        COD, TRANSFER
+    }
 
-    // Getter & Setter untuk detailList
+    @Enumerated(EnumType.STRING)
+    @Column(name = "metode_pembayaran")
+    private MetodePembayaran metodePembayaran;
+
     public java.util.List<DetailTransaksiJual> getDetailList() { return detailList; }
     public void setDetailList(java.util.List<DetailTransaksiJual> detailList) { this.detailList = detailList; }
+
+    public BigDecimal getTotal() { return total; }
+    public void setTotal(BigDecimal total) { this.total = total; }
+
+    public MetodePembayaran getMetodePembayaran() { return metodePembayaran; }
+    public void setMetodePembayaran(MetodePembayaran metodePembayaran) { this.metodePembayaran = metodePembayaran; }
 }
