@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TransaksiPeminjamanRepository extends JpaRepository<TransaksiPeminjaman, Integer> {
-    List<TransaksiPeminjaman> findByTransaksi_IdTransaksi(Integer idTransaksi);
-    // Jika tetap error, gunakan @Query sebagai alternatif:
-    // @org.springframework.data.jpa.repository.Query("SELECT t FROM TransaksiPeminjaman t WHERE t.transaksi.idTransaksi = :idTransaksi")
-    // List<TransaksiPeminjaman> findByTransaksiIdTransaksi(@org.springframework.data.repository.query.Param("idTransaksi") Integer idTransaksi);
+    // Tidak perlu override findById, sudah ada di JpaRepository
+    // Jika ingin custom query, gunakan @Query
+    // Contoh:
+    // @Query("SELECT t FROM TransaksiPeminjaman t WHERE t.id = :idTransaksi")
+    // Optional<TransaksiPeminjaman> findByTransaksiId(@Param("idTransaksi") Integer idTransaksi);
 }

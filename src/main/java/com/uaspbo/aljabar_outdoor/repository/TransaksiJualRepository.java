@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface TransaksiJualRepository extends JpaRepository<TransaksiJual, Integer> {
-    List<TransaksiJual> findByTransaksi_IdTransaksi(Integer idTransaksi);
+    // List<TransaksiJual> findByTransaksi_IdTransaksi(Integer idTransaksi);
 
     // Jika tetap error, gunakan @Query sebagai alternatif:
     // @Query("SELECT t FROM TransaksiJual t WHERE t.transaksi.idTransaksi = :idTransaksi")

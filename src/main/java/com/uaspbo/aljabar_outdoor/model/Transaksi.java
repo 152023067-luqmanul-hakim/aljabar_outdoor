@@ -1,5 +1,6 @@
 package com.uaspbo.aljabar_outdoor.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -9,13 +10,16 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "transaksi")
-public class Transaksi {
+public abstract class Transaksi {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_transaksi")
@@ -44,6 +48,12 @@ public class Transaksi {
     @Column(name = "status")
     private StatusTransaksi status;
 
+    @Column(name = "jumlah")
+    private Integer jumlah;
+
+    @Column(name = "subtotal")
+    private BigDecimal subtotal;
+
     // Getter & Setter
     public Integer getIdTransaksi() { return idTransaksi; }
     public void setIdTransaksi(Integer idTransaksi) { this.idTransaksi = idTransaksi; }
@@ -59,4 +69,10 @@ public class Transaksi {
 
     public StatusTransaksi getStatus() { return status; }
     public void setStatus(StatusTransaksi status) { this.status = status; }
+
+    public Integer getJumlah() { return jumlah; }
+    public void setJumlah(Integer jumlah) { this.jumlah = jumlah; }
+
+    public BigDecimal getSubtotal() { return subtotal; }
+    public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
 }
