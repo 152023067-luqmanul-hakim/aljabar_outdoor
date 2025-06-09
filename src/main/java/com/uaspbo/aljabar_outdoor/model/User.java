@@ -24,7 +24,7 @@ public class User {
     private String alamat;
 
     @Column(name = "no_telepon")
-    private Integer noTelepon;
+    private String noTelepon;
 
     public enum Role {
         ADMIN, USER
@@ -52,8 +52,8 @@ public class User {
     public String getAlamat() { return alamat; }
     public void setAlamat(String alamat) { this.alamat = alamat; }
 
-    public Integer getNoTelepon() { return noTelepon; }
-    public void setNoTelepon(Integer noTelepon) { this.noTelepon = noTelepon; }
+    public String getNoTelepon() { return noTelepon; }
+    public void setNoTelepon(String noTelepon) { this.noTelepon = noTelepon; }
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }

@@ -155,15 +155,15 @@
                         <h3 class="font-semibold mb-2">Data Pengiriman:</h3>
                         <div class="mb-2">
                             <label class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
-                            <input type="text" name="namaLengkap" form="checkoutBeliForm" th:value="${user.namaLengkap}" readonly class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500 bg-gray-100" />
+                            <input type="text" name="namaLengkap" form="checkoutBeliForm" th:value="${user.namaLengkap}" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" />
                         </div>
                         <div class="mb-2">
                             <label class="block text-sm font-medium text-gray-700">No. Telepon</label>
-                            <input type="text" name="noTelepon" form="checkoutBeliForm" th:value="${user.noTelepon}" readonly class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500 bg-gray-100" />
+                            <input type="text" name="noTelepon" form="checkoutBeliForm" th:value="${user.noTelepon}" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" />
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label>
-                            <textarea name="alamat" form="checkoutBeliForm" readonly class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500 bg-gray-100" th:text="${user.alamat}"></textarea>
+                            <textarea name="alamat" form="checkoutBeliForm" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" th:text="${user.alamat}"></textarea>
                         </div>
                     </div>
                     <div class="mb-4">
@@ -276,12 +276,141 @@
                     </div>
                 </div>
                 <form th:action="@{'/user/transaksi/checkout-sewa'}" method="post" class="mt-2 text-right">
-                    <button type="submit" class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700">
+                    <button type="button" id="btnCheckoutSewa" class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700">
                         Sewa Sekarang <i class="fas fa-key ml-2"></i>
                     </button>
                 </form>
             </div>
         </div>
     </div>
+    <!-- Modal Konfirmasi Checkout SEWA -->
+    <div id="modalCheckoutSewa" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-8 relative">
+            <button id="closeModalSewa" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+            <h2 class="text-xl font-bold mb-4 text-yellow-700 flex items-center"><i class="fas fa-key mr-2"></i> Konfirmasi Penyewaan</h2>
+            <div class="mb-4">
+                <h3 class="font-semibold mb-2">Detail Transaksi:</h3>
+                <table class="w-full text-sm mb-2">
+                    <thead>
+                        <tr class="text-gray-500">
+                            <th class="text-left">Produk</th>
+                            <th class="text-center">Jumlah</th>
+                            <th class="text-right">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${keranjangList}" th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).SEWA}">
+                            <td th:text="${item.product.namaProduk}"></td>
+                            <td class="text-center" th:text="${item.jumlah}"></td>
+                            <td class="text-right" th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaSewaPerHari * item.jumlah, 0, 'COMMA', 2, 'POINT')}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-right font-semibold mt-2">
+                    Total: <span th:text="${'Rp' + #numbers.formatDecimal(totalHargaSewa, 0, 'COMMA', 2, 'POINT')}"></span>
+                </div>
+            </div>
+            <div class="mb-4">
+                <h3 class="font-semibold mb-2">Data Pengiriman:</h3>
+                <div class="mb-2">
+                    <label class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                    <input type="text" name="namaLengkap" id="modalNamaLengkap" th:value="${user.namaLengkap}" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                </div>
+                <div class="mb-2">
+                    <label class="block text-sm font-medium text-gray-700">No. Telepon</label>
+                    <input type="text" name="noTelepon" id="modalNoTelepon" th:value="${user.noTelepon}" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label>
+                    <textarea name="alamat" id="modalAlamat" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" th:text="${user.alamat}"></textarea>
+                </div>
+            </div>
+            <div class="mb-4 flex gap-4">
+                <div class="w-1/2">
+                    <label class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
+                    <input type="date" name="tanggalMulai" id="modalTanggalMulai" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                </div>
+                <div class="w-1/2">
+                    <label class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
+                    <input type="date" name="tanggalSelesai" id="modalTanggalSelesai" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                </div>
+            </div>
+            <div class="mb-4">
+                <h3 class="font-semibold mb-2">Metode Pembayaran:</h3>
+                <select name="metodePembayaran" id="modalMetodePembayaran" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    <option value="">Pilih Metode Pembayaran</option>
+                    <option value="COD">Bayar di Tempat (COD)</option>
+                    <option value="TRANSFER">Transfer Bank</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-2 mt-4">
+                <button id="batalCheckoutSewa" type="button" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700">Batal</button>
+                <button type="submit" form="checkoutSewaForm" class="px-6 py-2 rounded bg-yellow-600 hover:bg-yellow-700 text-white font-semibold">Konfirmasi &amp; Sewa</button>
+            </div>
+        </div>
+    </div>
+    <form id="checkoutSewaForm" th:action="@{'/user/transaksi/checkout-sewa'}" method="post" class="hidden">
+        <input type="hidden" name="namaLengkap" form="checkoutSewaForm" />
+        <input type="hidden" name="noTelepon" form="checkoutSewaForm" />
+        <input type="hidden" name="alamat" form="checkoutSewaForm" />
+        <input type="hidden" name="tanggalMulai" form="checkoutSewaForm" />
+        <input type="hidden" name="tanggalSelesai" form="checkoutSewaForm" />
+        <input type="hidden" name="metodePembayaran" form="checkoutSewaForm" />
+    </form>
+    <script>
+        const btnCheckoutSewa = document.getElementById('btnCheckoutSewa');
+        const modalCheckoutSewa = document.getElementById('modalCheckoutSewa');
+        const closeModalSewa = document.getElementById('closeModalSewa');
+        const batalCheckoutSewa = document.getElementById('batalCheckoutSewa');
+        btnCheckoutSewa.addEventListener('click', function(e) {
+            e.preventDefault();
+            modalCheckoutSewa.classList.remove('hidden');
+        });
+        closeModalSewa.addEventListener('click', function() {
+            modalCheckoutSewa.classList.add('hidden');
+        });
+        batalCheckoutSewa.addEventListener('click', function() {
+            modalCheckoutSewa.classList.add('hidden');
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') modalCheckoutSewa.classList.add('hidden');
+        });
+        // Modal SEWA: submit tanggal & data pengiriman ke form tersembunyi
+        const checkoutSewaForm = document.getElementById('checkoutSewaForm');
+        const tanggalMulaiInput = document.querySelector('input[name="tanggalMulai"][form="checkoutSewaForm"]');
+        const tanggalSelesaiInput = document.querySelector('input[name="tanggalSelesai"][form="checkoutSewaForm"]');
+        const namaLengkapInput = document.querySelector('input[name="namaLengkap"][form="checkoutSewaForm"]');
+        const noTeleponInput = document.querySelector('input[name="noTelepon"][form="checkoutSewaForm"]');
+        // Ambil hidden input (hanya input, bukan textarea)
+        const alamatInput = document.querySelector('input[type="hidden"][name="alamat"][form="checkoutSewaForm"]');
+        const tanggalMulaiModal = document.getElementById('modalTanggalMulai');
+        const tanggalSelesaiModal = document.getElementById('modalTanggalSelesai');
+        const namaLengkapModal = document.getElementById('modalNamaLengkap');
+        const noTeleponModal = document.getElementById('modalNoTelepon');
+        const alamatModal = document.getElementById('modalAlamat');
+        const btnSubmitSewa = document.querySelector('#modalCheckoutSewa button[type="submit"]');
+        // JS: binding metode pembayaran
+        const metodePembayaranInput = document.querySelector('input[name="metodePembayaran"][form="checkoutSewaForm"]');
+        const metodePembayaranModal = document.getElementById('modalMetodePembayaran');
+        btnSubmitSewa.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Validasi tanggal
+            if (!tanggalMulaiModal.value || !tanggalSelesaiModal.value) {
+                alert('Tanggal mulai dan tanggal selesai harus diisi!');
+                return;
+            }
+            if (!metodePembayaranModal.value) {
+                alert('Pilih metode pembayaran!');
+                return;
+            }
+            tanggalMulaiInput.value = tanggalMulaiModal.value.trim().replace(/,/g, '');
+            tanggalSelesaiInput.value = tanggalSelesaiModal.value.trim().replace(/,/g, '');
+            namaLengkapInput.value = namaLengkapModal.value.trim();
+            noTeleponInput.value = noTeleponModal.value.trim();
+            alamatInput.value = alamatModal.value.trim();
+            metodePembayaranInput.value = metodePembayaranModal.value;
+            checkoutSewaForm.submit();
+        });
+    </script>
 </body>
 </html>

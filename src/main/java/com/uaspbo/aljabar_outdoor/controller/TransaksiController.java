@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -40,10 +40,32 @@ public class TransaksiController {
     }
 
     @PostMapping("/checkout-beli")
-    public String checkoutBeli(Principal principal, @RequestParam("metodePembayaran") String metodePembayaranStr, Model model) {
+    public String checkoutBeli(Principal principal,
+                               @RequestParam("metodePembayaran") String metodePembayaranStr,
+                               @RequestParam("namaLengkap") String namaLengkap,
+                               @RequestParam("noTelepon") String noTelepon,
+                               @RequestParam("alamat") String alamat,
+                               Model model) {
         Optional<User> optionalUser = userRepository.findByUsername(principal.getName());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
+            // Sinkronisasi data user jika ada perubahan data pengiriman
+            boolean userChanged = false;
+            if (!Objects.equals(user.getNamaLengkap(), namaLengkap)) {
+                user.setNamaLengkap(namaLengkap);
+                userChanged = true;
+            }
+            if (!Objects.equals(user.getNoTelepon(), noTelepon)) {
+                user.setNoTelepon(noTelepon);
+                userChanged = true;
+            }
+            if (!Objects.equals(user.getAlamat(), alamat)) {
+                user.setAlamat(alamat);
+                userChanged = true;
+            }
+            if (userChanged) {
+                userRepository.save(user);
+            }
             List<Keranjang> keranjangList = keranjangRepository.findByUserIdUser(user.getIdUser());
             List<Keranjang> keranjangBeli = keranjangList.stream()
                     .filter(k -> k.getTipeAksi() == Keranjang.TipeAksi.BELI)
@@ -58,6 +80,7 @@ public class TransaksiController {
             transaksiJual.setTanggalTransaksi(java.time.LocalDateTime.now());
             transaksiJual.setStatus(com.uaspbo.aljabar_outdoor.model.Transaksi.StatusTransaksi.Diproses);
             transaksiJual.setJenisTransaksi(com.uaspbo.aljabar_outdoor.model.Transaksi.JenisTransaksi.Beli);
+            // Simpan data pengiriman dari form
             java.util.List<com.uaspbo.aljabar_outdoor.model.DetailTransaksiJual> detailList = new java.util.ArrayList<>();
             for (Keranjang item : keranjangBeli) {
                 com.uaspbo.aljabar_outdoor.model.DetailTransaksiJual detail = new com.uaspbo.aljabar_outdoor.model.DetailTransaksiJual();
@@ -80,7 +103,6 @@ public class TransaksiController {
             }
             transaksiJual.setDetailList(detailList);
             transaksiJual.setTotal(total);
-
             // Set metode pembayaran dari request
             try {
                 transaksiJual.setMetodePembayaran(com.uaspbo.aljabar_outdoor.model.TransaksiJual.MetodePembayaran.valueOf(metodePembayaranStr));
@@ -99,10 +121,31 @@ public class TransaksiController {
     public String checkoutSewa(Principal principal,
                                @RequestParam("tanggalMulai") String tanggalMulaiStr,
                                @RequestParam("tanggalSelesai") String tanggalSelesaiStr,
+                               @RequestParam("namaLengkap") String namaLengkap,
+                               @RequestParam("noTelepon") String noTelepon,
+                               @RequestParam("alamat") String alamat,
+                               @RequestParam("metodePembayaran") String metodePembayaranStr,
                                Model model) {
         Optional<User> optionalUser = userRepository.findByUsername(principal.getName());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
+            // Sinkronisasi data user jika ada perubahan data pengiriman
+            boolean userChanged = false;
+            if (!Objects.equals(user.getNamaLengkap(), namaLengkap)) {
+                user.setNamaLengkap(namaLengkap);
+                userChanged = true;
+            }
+            if (!Objects.equals(user.getNoTelepon(), noTelepon)) {
+                user.setNoTelepon(noTelepon);
+                userChanged = true;
+            }
+            if (!Objects.equals(user.getAlamat(), alamat)) {
+                user.setAlamat(alamat);
+                userChanged = true;
+            }
+            if (userChanged) {
+                userRepository.save(user);
+            }
             List<Keranjang> keranjangList = keranjangRepository.findByUserIdUser(user.getIdUser());
             List<Keranjang> keranjangSewa = keranjangList.stream()
                     .filter(k -> k.getTipeAksi() == Keranjang.TipeAksi.SEWA)
@@ -120,14 +163,25 @@ public class TransaksiController {
             transaksiPeminjaman.setJenisTransaksi(com.uaspbo.aljabar_outdoor.model.Transaksi.JenisTransaksi.Sewa);
             transaksiPeminjaman.setTanggalMulai(tanggalMulai);
             transaksiPeminjaman.setTanggalSelesai(tanggalSelesai);
+            // Set metode pembayaran
+            try {
+                transaksiPeminjaman.setMetodePembayaran(com.uaspbo.aljabar_outdoor.model.TransaksiPeminjaman.MetodePembayaran.valueOf(metodePembayaranStr));
+            } catch (Exception e) {
+                transaksiPeminjaman.setMetodePembayaran(com.uaspbo.aljabar_outdoor.model.TransaksiPeminjaman.MetodePembayaran.COD);
+            }
             java.util.List<com.uaspbo.aljabar_outdoor.model.DetailTransaksiPeminjaman> detailList = new java.util.ArrayList<>();
+            java.math.BigDecimal total = java.math.BigDecimal.ZERO;
+            long days = java.time.temporal.ChronoUnit.DAYS.between(tanggalMulai, tanggalSelesai);
+            if (days < 1) days = 1; // Minimal 1 hari
             for (Keranjang item : keranjangSewa) {
                 com.uaspbo.aljabar_outdoor.model.DetailTransaksiPeminjaman detail = new com.uaspbo.aljabar_outdoor.model.DetailTransaksiPeminjaman();
                 detail.setTransaksiPeminjaman(transaksiPeminjaman);
                 detail.setProduct(item.getProduct());
                 detail.setJumlah(item.getJumlah());
                 detail.setHargaPerHari(item.getProduct().getHargaSewaPerHari());
-                detail.setSubtotal(item.getProduct().getHargaSewaPerHari().multiply(java.math.BigDecimal.valueOf(item.getJumlah())));
+                java.math.BigDecimal subtotal = item.getProduct().getHargaSewaPerHari().multiply(java.math.BigDecimal.valueOf(item.getJumlah()));
+                detail.setSubtotal(subtotal);
+                total = total.add(subtotal.multiply(java.math.BigDecimal.valueOf(days)));
                 // KURANGI STOK SEWA
                 Product produk = item.getProduct();
                 Integer stokSewa = produk.getStokSewa() != null ? produk.getStokSewa() : 0;
@@ -136,6 +190,7 @@ public class TransaksiController {
                 detailList.add(detail);
             }
             transaksiPeminjaman.setDetailList(detailList);
+            transaksiPeminjaman.setTotal(total);
             transaksiRepository.save(transaksiPeminjaman);
             keranjangRepository.deleteAll(keranjangSewa);
             return "redirect:/user/transaksi/riwayat";
