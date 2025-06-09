@@ -1,6 +1,5 @@
 package com.uaspbo.aljabar_outdoor.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -48,12 +47,6 @@ public abstract class Transaksi {
     @Column(name = "status")
     private StatusTransaksi status;
 
-    @Column(name = "jumlah")
-    private Integer jumlah;
-
-    @Column(name = "subtotal")
-    private BigDecimal subtotal;
-
     // Getter & Setter
     public Integer getIdTransaksi() { return idTransaksi; }
     public void setIdTransaksi(Integer idTransaksi) { this.idTransaksi = idTransaksi; }
@@ -69,10 +62,4 @@ public abstract class Transaksi {
 
     public StatusTransaksi getStatus() { return status; }
     public void setStatus(StatusTransaksi status) { this.status = status; }
-
-    public Integer getJumlah() { return jumlah; }
-    public void setJumlah(Integer jumlah) { this.jumlah = jumlah; }
-
-    public BigDecimal getSubtotal() { return subtotal; }
-    public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
 }

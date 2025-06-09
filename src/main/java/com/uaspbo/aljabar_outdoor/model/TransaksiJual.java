@@ -13,10 +13,17 @@ public class TransaksiJual extends Transaksi {
     @Column(name = "harga_satuan")
     private BigDecimal hargaSatuan;
 
+    @OneToMany(mappedBy = "transaksiJual", cascade = CascadeType.ALL)
+    private java.util.List<DetailTransaksiJual> detailList;
+
     // Getter & Setter
     public Product getProduct() { return product; }
     public void setProduct(Product product) { this.product = product; }
 
     public BigDecimal getHargaSatuan() { return hargaSatuan; }
     public void setHargaSatuan(BigDecimal hargaSatuan) { this.hargaSatuan = hargaSatuan; }
+
+    // Getter & Setter untuk detailList
+    public java.util.List<DetailTransaksiJual> getDetailList() { return detailList; }
+    public void setDetailList(java.util.List<DetailTransaksiJual> detailList) { this.detailList = detailList; }
 }
