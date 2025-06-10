@@ -3,6 +3,7 @@ package com.uaspbo.aljabar_outdoor.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,8 +59,21 @@ public class AdminController {
 
     @PostMapping("/dataProduct/delete/{id}")
     public String deleteProduct(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
-        productRepository.deleteById(id);
-        redirectAttributes.addFlashAttribute("success", "Produk berhasil dihapus.");
+        try {
+            Product product = productRepository.findById(id).orElse(null);
+            if (product == null) {
+                redirectAttributes.addFlashAttribute("error", "Produk tidak ditemukan.");
+                return "redirect:/admin/dataProduct";
+            }
+            
+            productRepository.deleteById(id);
+            redirectAttributes.addFlashAttribute("success", "Produk berhasil dihapus.");
+        } catch (DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute("error", 
+                "Tidak dapat menghapus produk karena masih ada transaksi yang menggunakan produk ini.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Terjadi kesalahan saat menghapus produk.");
+        }
         return "redirect:/admin/dataProduct";
     }
 

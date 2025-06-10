@@ -221,15 +221,15 @@ public class TransaksiController {
         Product product = optionalProduct.get();
         // Sinkronisasi data user jika ada perubahan data pengiriman
         boolean userChanged = false;
-        if (!user.getNamaLengkap().equals(namaLengkap)) {
+        if (!Objects.equals(user.getNamaLengkap(), namaLengkap)) {
             user.setNamaLengkap(namaLengkap);
             userChanged = true;
         }
-        if (!user.getNoTelepon().equals(noTelepon)) {
+        if (!Objects.equals(user.getNoTelepon(), noTelepon)) {
             user.setNoTelepon(noTelepon);
             userChanged = true;
         }
-        if (!user.getAlamat().equals(alamat)) {
+        if (!Objects.equals(user.getAlamat(), alamat)) {
             user.setAlamat(alamat);
             userChanged = true;
         }
