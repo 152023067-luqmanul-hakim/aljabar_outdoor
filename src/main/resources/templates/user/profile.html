@@ -1,171 +1,321 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Profil Pengguna</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <style>
-        .card {
-            box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        .card:hover {
-            box-shadow: 0 15px 35px -15px rgba(0, 0, 0, 0.15);
-        }
-        .input-field {
-            transition: all 0.3s ease;
-            border-color: #e2e8f0;
-        }
-        .input-field:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-    </style>
-</head>
-<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Profil Pengguna - Aljabar Outdoor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                600: "#2563eb",
+                700: "#1d4ed8",
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
-        <div class="max-w-2xl mx-auto">
-            <!-- Header Section -->
-            <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">Profil Pengguna</h1>
-                <div class="text-sm text-gray-500">
-                    <span th:text="${user.createdAt != null ? 'Bergabung sejak ' + #temporals.format(user.createdAt, 'dd MMM yyyy') : ''}"></span>
+      <div class="max-w-4xl mx-auto">
+        <!-- Header Section -->
+        <div class="bg-white shadow-xl rounded-2xl p-8 mb-8">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div
+                class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mr-6"
+              >
+                <i class="fas fa-user text-2xl text-blue-600"></i>
+              </div>
+              <div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                  <i class="fas fa-user-circle text-blue-600 mr-3"></i>
+                  Profil Pengguna
+                </h1>
+                <p class="text-gray-600">Kelola informasi akun Anda</p>
+                <div class="text-sm text-gray-500 mt-1">
+                  <span
+                    th:text="${user.createdAt != null ? 'Bergabung sejak ' + #temporals.format(user.createdAt, 'dd MMM yyyy') : ''}"
+                  ></span>
                 </div>
+              </div>
             </div>
-
-            <!-- Profile Card -->
-            <div class="bg-white rounded-xl card p-6 md:p-8">
-                <form th:action="@{/user/profile}" th:object="${user}" method="post" class="space-y-6">
-                    <!-- Error Messages -->
-                    <div th:if="${#fields.hasErrors()}" class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-exclamation-circle text-red-500"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p th:each="err : ${#fields.errors('*')}" th:text="${err}" class="text-sm text-red-700"></p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div th:if="${error}" class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-exclamation-circle text-red-500"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-red-700" th:text="${error}"></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Success Message (you can add this if needed) -->
-                    <div th:if="${success}" class="bg-green-50 border-l-4 border-green-500 p-4 rounded">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-check-circle text-green-500"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-green-700" th:text="${success}"></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Form Fields -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Username -->
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fas fa-user text-gray-400"></i>
-                                </div>
-                                <input type="text" th:field="*{username}" 
-                                       class="input-field pl-10 w-full rounded-lg px-4 py-2 border focus:outline-none" 
-                                       readonly />
-                            </div>
-                        </div>
-
-                        <!-- Full Name -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fas fa-id-card text-gray-400"></i>
-                                </div>
-                                <input type="text" th:field="*{namaLengkap}" 
-                                       class="input-field pl-10 w-full rounded-lg px-4 py-2 border focus:outline-none" 
-                                       required />
-                            </div>
-                        </div>
-
-                        <!-- Phone Number -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">No. Telepon</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fas fa-phone text-gray-400"></i>
-                                </div>
-                                <input type="text" th:field="*{noTelepon}" 
-                                       class="input-field pl-10 w-full rounded-lg px-4 py-2 border focus:outline-none" 
-                                       required />
-                            </div>
-                        </div>
-
-                        <!-- Address -->
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fas fa-map-marker-alt text-gray-400"></i>
-                                </div>
-                                <input type="text" th:field="*{alamat}" 
-                                       class="input-field pl-10 w-full rounded-lg px-4 py-2 border focus:outline-none" 
-                                       required />
-                            </div>
-                        </div>
-
-                        <!-- New Password -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Password Baru</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fas fa-lock text-gray-400"></i>
-                                </div>
-                                <input type="password" th:field="*{password}" 
-                                       class="input-field pl-10 w-full rounded-lg px-4 py-2 border focus:outline-none" 
-                                       placeholder="Kosongkan jika tidak ingin mengubah" />
-                            </div>
-                        </div>
-
-                        <!-- Confirm Password -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fas fa-lock text-gray-400"></i>
-                                </div>
-                                <input type="password" name="confirmPassword" 
-                                       class="input-field pl-10 w-full rounded-lg px-4 py-2 border focus:outline-none" 
-                                       placeholder="Ulangi password baru" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Form Actions -->
-                    <div class="flex justify-between items-center pt-4">
-                        <a href="/user/home" class="text-primary-600 hover:text-primary-800 font-medium">
-                            <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
-                        </a>
-                        <button type="submit" 
-                                class="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1">
-                            <i class="fas fa-save mr-2"></i> Simpan Perubahan
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <a
+              href="/user/home"
+              class="bg-blue-100 hover:bg-blue-200 text-blue-600 px-4 py-2 rounded-lg transition-colors flex items-center"
+            >
+              <i class="fas fa-arrow-left mr-2"></i> Kembali
+            </a>
+          </div>
         </div>
+
+        <!-- Profile Card -->
+        <div class="bg-white shadow-xl rounded-2xl p-8">
+          <form
+            th:action="@{/user/profile}"
+            th:object="${user}"
+            method="post"
+            class="space-y-8"
+          >
+            <!-- Alert Messages -->
+            <div
+              th:if="${#fields.hasErrors()}"
+              class="bg-red-50 border-l-4 border-red-500 p-6 rounded-xl"
+            >
+              <div class="flex items-center">
+                <div class="bg-red-100 rounded-full p-2 mr-4">
+                  <i class="fas fa-exclamation-circle text-red-600"></i>
+                </div>
+                <div>
+                  <h3 class="text-red-800 font-semibold mb-2">
+                    Terjadi Kesalahan
+                  </h3>
+                  <ul class="list-disc list-inside">
+                    <li
+                      th:each="err : ${#fields.errors('*')}"
+                      th:text="${err}"
+                      class="text-sm text-red-700"
+                    ></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div
+              th:if="${error}"
+              class="bg-red-50 border-l-4 border-red-500 p-6 rounded-xl"
+            >
+              <div class="flex items-center">
+                <div class="bg-red-100 rounded-full p-2 mr-4">
+                  <i class="fas fa-exclamation-circle text-red-600"></i>
+                </div>
+                <div>
+                  <h3 class="text-red-800 font-semibold">Error</h3>
+                  <p class="text-sm text-red-700" th:text="${error}"></p>
+                </div>
+              </div>
+            </div>
+
+            <div
+              th:if="${success}"
+              class="bg-green-50 border-l-4 border-green-500 p-6 rounded-xl"
+            >
+              <div class="flex items-center">
+                <div class="bg-green-100 rounded-full p-2 mr-4">
+                  <i class="fas fa-check-circle text-green-600"></i>
+                </div>
+                <div>
+                  <h3 class="text-green-800 font-semibold">Berhasil</h3>
+                  <p class="text-sm text-green-700" th:text="${success}"></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Sections -->
+            <!-- Account Information -->
+            <div class="bg-gray-50 rounded-xl p-6">
+              <h3
+                class="text-lg font-semibold text-gray-800 mb-4 flex items-center"
+              >
+                <i class="fas fa-user-cog text-blue-600 mr-3"></i>
+                Informasi Akun
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-semibold text-gray-700 mb-2"
+                    >Username</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-user text-gray-400"></i>
+                    </div>
+                    <input
+                      type="text"
+                      th:field="*{username}"
+                      class="pl-12 w-full rounded-xl px-4 py-3 border border-gray-200 bg-gray-100 focus:outline-none cursor-not-allowed"
+                      readonly
+                    />
+                  </div>
+                  <p class="text-sm text-gray-500 mt-1">
+                    Username tidak dapat diubah
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Personal Information -->
+            <div class="bg-gray-50 rounded-xl p-6">
+              <h3
+                class="text-lg font-semibold text-gray-800 mb-4 flex items-center"
+              >
+                <i class="fas fa-address-card text-green-600 mr-3"></i>
+                Informasi Pribadi
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2"
+                    >Nama Lengkap</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-id-card text-gray-400"></i>
+                    </div>
+                    <input
+                      type="text"
+                      th:field="*{namaLengkap}"
+                      class="pl-12 w-full rounded-xl px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      required
+                      placeholder="Masukkan nama lengkap"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2"
+                    >No. Telepon</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-phone text-gray-400"></i>
+                    </div>
+                    <input
+                      type="text"
+                      th:field="*{noTelepon}"
+                      class="pl-12 w-full rounded-xl px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      required
+                      placeholder="Masukkan nomor telepon"
+                    />
+                  </div>
+                </div>
+
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-semibold text-gray-700 mb-2"
+                    >Alamat</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute top-3 left-0 pl-4 flex items-start pointer-events-none"
+                    >
+                      <i class="fas fa-map-marker-alt text-gray-400 mt-1"></i>
+                    </div>
+                    <textarea
+                      th:field="*{alamat}"
+                      rows="3"
+                      class="pl-12 w-full rounded-xl px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                      required
+                      placeholder="Masukkan alamat lengkap"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="bg-gray-50 rounded-xl p-6">
+              <h3
+                class="text-lg font-semibold text-gray-800 mb-4 flex items-center"
+              >
+                <i class="fas fa-shield-alt text-red-600 mr-3"></i>
+                Keamanan Akun
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2"
+                    >Password Baru</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-lock text-gray-400"></i>
+                    </div>
+                    <input
+                      type="password"
+                      th:field="*{password}"
+                      class="pl-12 w-full rounded-xl px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="Kosongkan jika tidak ingin mengubah"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2"
+                    >Konfirmasi Password</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-lock text-gray-400"></i>
+                    </div>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      class="pl-12 w-full rounded-xl px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="Ulangi password baru"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg"
+              >
+                <div class="flex items-start">
+                  <i class="fas fa-info-circle text-yellow-600 mt-1 mr-3"></i>
+                  <div>
+                    <p class="text-sm text-yellow-800 font-medium">
+                      Tips Keamanan:
+                    </p>
+                    <ul
+                      class="text-sm text-yellow-700 mt-1 list-disc list-inside"
+                    >
+                      <li>
+                        Gunakan password yang kuat dengan kombinasi huruf,
+                        angka, dan simbol
+                      </li>
+                      <li>
+                        Jangan gunakan password yang sama dengan akun lain
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div
+              class="flex justify-between items-center pt-6 border-t border-gray-200"
+            >
+              <a
+                href="/user/home"
+                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold transition-colors flex items-center"
+              >
+                <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
+              </a>
+              <button
+                type="submit"
+                class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center"
+              >
+                <i class="fas fa-save mr-2"></i> Simpan Perubahan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-</body>
+  </body>
 </html>

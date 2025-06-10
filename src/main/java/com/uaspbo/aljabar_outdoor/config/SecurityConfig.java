@@ -26,7 +26,19 @@ public class SecurityConfig {
             )
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout") // opsional
-                .permitAll());
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+            )
+            .sessionManagement(session -> session
+                .invalidSessionUrl("/login?session=invalid")
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(false)
+                .expiredUrl("/login?session=expired")
+            )
+            .sessionManagement(session -> session
+                .sessionFixation().migrateSession()
+            );
 
         return http.build();
     }

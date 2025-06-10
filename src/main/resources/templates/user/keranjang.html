@@ -1,416 +1,810 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Keranjang Saya</title>
+    <title>Keranjang Saya - Aljabar Outdoor</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                        }
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                600: "#2563eb",
+                700: "#1d4ed8",
+              },
+            },
+          },
+        },
+      };
     </script>
-</head>
-<body class="bg-gray-50">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <div class="flex items-center justify-between mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-shopping-cart mr-3 text-primary-600"></i> Keranjang Saya
-            </h1>
-            <a href="/user/home" class="text-primary-600 hover:text-primary-800 font-medium">
-                <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
-            </a>
+  </head>
+  <body class="bg-gradient-to-br from-gray-50 to-blue-50">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+      <!-- Header -->
+      <div class="bg-white shadow-xl rounded-2xl p-8 mb-8">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div
+              class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mr-6"
+            >
+              <i class="fas fa-shopping-cart text-2xl text-blue-600"></i>
+            </div>
+            <div>
+              <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                Keranjang Belanja
+              </h1>
+              <p class="text-gray-600">
+                Kelola produk yang ingin Anda beli atau sewa
+              </p>
+            </div>
+          </div>
+          <a
+            href="/user/home"
+            class="bg-blue-100 hover:bg-blue-200 text-blue-600 px-6 py-3 rounded-xl transition-colors flex items-center font-semibold"
+          >
+            <i class="fas fa-arrow-left mr-2"></i> Kembali
+          </a>
+        </div>
+      </div>
+
+      <!-- Empty Cart State -->
+      <div
+        th:if="${#lists.isEmpty(keranjangList)}"
+        class="bg-white rounded-2xl shadow-xl p-12 text-center"
+      >
+        <div
+          class="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6"
+        >
+          <i class="fas fa-shopping-cart text-4xl text-gray-400"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+          Keranjang Anda Kosong
+        </h2>
+        <p class="text-gray-600 mb-8 text-lg">
+          Tambahkan produk ke keranjang untuk memulai belanja
+        </p>
+        <a
+          href="/user/home"
+          class="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-8 py-4 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold inline-flex items-center"
+        >
+          <i class="fas fa-plus mr-2"></i> Mulai Belanja
+        </a>
+      </div>
+
+      <!-- Cart Content -->
+      <div th:unless="${#lists.isEmpty(keranjangList)}" class="space-y-8">
+        <!-- Purchase Cart -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div class="bg-gradient-to-r from-green-500 to-green-600 p-6">
+            <h2 class="text-2xl font-bold text-white flex items-center">
+              <i class="fas fa-shopping-bag mr-3"></i> Keranjang Pembelian
+            </h2>
+            <p class="text-green-100 mt-2">Produk yang akan dibeli</p>
+          </div>
+
+          <div class="p-6">
+            <div class="overflow-x-auto">
+              <table class="min-w-full">
+                <thead>
+                  <tr class="border-b border-gray-200">
+                    <th
+                      class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      No
+                    </th>
+                    <th
+                      class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      Produk
+                    </th>
+                    <th
+                      class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      Jumlah
+                    </th>
+                    <th
+                      class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      Harga
+                    </th>
+                    <th
+                      class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      Subtotal
+                    </th>
+                    <th
+                      class="px-6 py-4 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      Aksi
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                  <tr
+                    th:each="item, iterStat : ${keranjangList}"
+                    th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).BELI}"
+                    class="hover:bg-gray-50"
+                  >
+                    <td
+                      class="px-6 py-4 text-sm text-gray-600"
+                      th:text="${iterStat.index + 1}"
+                    ></td>
+                    <td class="px-6 py-4">
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 h-16 w-16">
+                          <img
+                            class="h-16 w-16 rounded-xl object-cover shadow-md"
+                            th:src="${item.product.imgUrl}"
+                            th:alt="${item.product.namaProduk}"
+                          />
+                        </div>
+                        <div class="ml-4">
+                          <div
+                            class="text-sm font-semibold text-gray-900"
+                            th:text="${item.product.namaProduk}"
+                          ></div>
+                          <div
+                            class="text-sm text-gray-500"
+                            th:text="${item.product.kategori}"
+                          ></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4">
+                      <div class="flex items-center">
+                        <form
+                          th:action="@{'/user/keranjang/update/' + ${item.idKeranjang}}"
+                          method="post"
+                          class="flex items-center bg-gray-50 rounded-lg"
+                        >
+                          <input
+                            type="hidden"
+                            name="tipeAksi"
+                            th:value="${item.tipeAksi}"
+                          />
+                          <button
+                            type="submit"
+                            name="action"
+                            value="decrement"
+                            class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-l-lg hover:bg-gray-100 transition-colors"
+                          >
+                            <i class="fas fa-minus"></i>
+                          </button>
+                          <span
+                            class="mx-3 text-sm font-semibold text-gray-700 min-w-[2rem] text-center"
+                            th:text="${item.jumlah}"
+                          ></span>
+                          <button
+                            type="submit"
+                            name="action"
+                            value="increment"
+                            class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-r-lg hover:bg-gray-100 transition-colors"
+                          >
+                            <i class="fas fa-plus"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                      <span
+                        th:text="${'Rp ' + #numbers.formatDecimal(item.product.hargaJual, 0, 'COMMA', 2, 'POINT')}"
+                      ></span>
+                    </td>
+                    <td class="px-6 py-4 text-sm font-bold text-green-600">
+                      <span
+                        th:text="${'Rp ' + #numbers.formatDecimal(item.product.hargaJual * item.jumlah, 0, 'COMMA', 2, 'POINT')}"
+                      ></span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                      <form
+                        th:action="@{'/user/keranjang/remove/' + ${item.idKeranjang}}"
+                        method="post"
+                      >
+                        <button
+                          type="submit"
+                          class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-colors"
+                        >
+                          <i class="fas fa-trash-alt mr-1"></i> Hapus
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Purchase Cart Footer -->
+            <div class="bg-green-50 rounded-xl p-6 mt-6">
+              <div class="flex justify-between items-center">
+                <form
+                  th:action="@{'/user/keranjang/clear?tipeAksi=BELI'}"
+                  method="post"
+                >
+                  <button
+                    type="submit"
+                    class="text-red-600 hover:text-red-800 font-semibold bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors"
+                  >
+                    <i class="fas fa-trash-alt mr-2"></i> Kosongkan Keranjang
+                  </button>
+                </form>
+                <div class="text-right">
+                  <p class="text-sm text-gray-600 mb-1">Total Pembelian</p>
+                  <h3 class="text-2xl font-bold text-green-600">
+                    <span
+                      th:text="${'Rp ' + #numbers.formatDecimal(totalHargaBeli, 0, 'COMMA', 2, 'POINT')}"
+                    ></span>
+                  </h3>
+                </div>
+              </div>
+              <div class="mt-4 flex justify-end">
+                <form
+                  id="checkoutBeliForm"
+                  th:action="@{'/user/transaksi/checkout-beli'}"
+                  method="post"
+                >
+                  <button
+                    type="button"
+                    id="btnCheckoutBeli"
+                    class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center"
+                  >
+                    <i class="fas fa-credit-card mr-2"></i> Checkout Pembelian
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div th:if="${#lists.isEmpty(keranjangList)}" class="bg-white rounded-xl shadow-sm p-8 text-center">
-            <i class="fas fa-shopping-cart text-5xl text-gray-300 mb-4"></i>
-            <h2 class="text-xl font-medium text-gray-600 mb-2">Keranjang Anda kosong</h2>
-            <p class="text-gray-500 mb-6">Tambahkan produk untuk memulai belanja</p>
-            <a href="/user/home" class="inline-block bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors">
-                <i class="fas fa-plus mr-2"></i> Tambah Produk
-            </a>
-        </div>
+        <!-- Rental Cart -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 p-6">
+            <h2 class="text-2xl font-bold text-white flex items-center">
+              <i class="fas fa-key mr-3"></i> Keranjang Penyewaan
+            </h2>
+            <p class="text-yellow-100 mt-2">Produk yang akan disewa</p>
+          </div>
 
-        <div th:unless="${#lists.isEmpty(keranjangList)}">
-            <div class="mb-8">
-                <h2 class="text-lg font-bold text-green-700 mb-2 flex items-center"><i class="fas fa-shopping-bag mr-2"></i> Keranjang Beli</h2>
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produk</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr th:each="item, iterStat : ${keranjangList}" th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).BELI}">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${iterStat.index + 1}"></td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                <img class="h-10 w-10 rounded-full" th:src="${item.product.imgUrl}" th:alt="${item.product.namaProduk}">
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900" th:text="${item.product.namaProduk}"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <form th:action="@{'/user/keranjang/update/' + ${item.idKeranjang}}" method="post" class="flex items-center">
-                                                <input type="hidden" name="tipeAksi" th:value="${item.tipeAksi}" />
-                                                <button type="submit" name="action" value="decrement" class="text-gray-500 hover:text-gray-700 px-2">
-                                                    <i class="fas fa-minus"></i>
-                                                </button>
-                                                <span class="mx-2 text-sm text-gray-700" th:text="${item.jumlah}"></span>
-                                                <button type="submit" name="action" value="increment" class="text-gray-500 hover:text-gray-700 px-2">
-                                                    <i class="fas fa-plus"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <span th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaJual, 0, 'COMMA', 2, 'POINT')}"></span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        <span th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaJual * item.jumlah, 0, 'COMMA', 2, 'POINT')}"></span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <form th:action="@{'/user/keranjang/remove/' + ${item.idKeranjang}}" method="post">
-                                            <button type="submit" class="text-red-600 hover:text-red-900">
-                                                <i class="fas fa-trash-alt"></i> Hapus
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- Total & Kosongkan Keranjang BELI -->
-                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
-                    <div class="flex justify-between items-center">
-                        <form th:action="@{'/user/keranjang/clear?tipeAksi=BELI'}" method="post">
-                            <button type="submit" class="text-red-600 hover:text-red-800 font-medium">
-                                <i class="fas fa-trash-alt mr-2"></i> Kosongkan Keranjang
-                            </button>
+          <div class="p-6">
+            <div class="overflow-x-auto">
+              <table class="min-w-full">
+                <thead>
+                  <tr class="border-b border-gray-200">
+                    <th
+                      class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      No
+                    </th>
+                    <th
+                      class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      Produk
+                    </th>
+                    <th
+                      class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      Jumlah
+                    </th>
+                    <th
+                      class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      Harga
+                    </th>
+                    <th
+                      class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      Subtotal
+                    </th>
+                    <th
+                      class="px-6 py-4 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      Aksi
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                  <tr
+                    th:each="item, iterStat : ${keranjangList}"
+                    th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).SEWA}"
+                    class="hover:bg-gray-50"
+                  >
+                    <td
+                      class="px-6 py-4 text-sm text-gray-600"
+                      th:text="${iterStat.index + 1}"
+                    ></td>
+                    <td class="px-6 py-4">
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 h-16 w-16">
+                          <img
+                            class="h-16 w-16 rounded-xl object-cover shadow-md"
+                            th:src="${item.product.imgUrl}"
+                            th:alt="${item.product.namaProduk}"
+                          />
+                        </div>
+                        <div class="ml-4">
+                          <div
+                            class="text-sm font-semibold text-gray-900"
+                            th:text="${item.product.namaProduk}"
+                          ></div>
+                          <div
+                            class="text-sm text-gray-500"
+                            th:text="${item.product.kategori}"
+                          ></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4">
+                      <div class="flex items-center">
+                        <form
+                          th:action="@{'/user/keranjang/update/' + ${item.idKeranjang}}"
+                          method="post"
+                          class="flex items-center bg-gray-50 rounded-lg"
+                        >
+                          <input
+                            type="hidden"
+                            name="tipeAksi"
+                            th:value="${item.tipeAksi}"
+                          />
+                          <button
+                            type="submit"
+                            name="action"
+                            value="decrement"
+                            class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-l-lg hover:bg-gray-100 transition-colors"
+                          >
+                            <i class="fas fa-minus"></i>
+                          </button>
+                          <span
+                            class="mx-3 text-sm font-semibold text-gray-700 min-w-[2rem] text-center"
+                            th:text="${item.jumlah}"
+                          ></span>
+                          <button
+                            type="submit"
+                            name="action"
+                            value="increment"
+                            class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-r-lg hover:bg-gray-100 transition-colors"
+                          >
+                            <i class="fas fa-plus"></i>
+                          </button>
                         </form>
-                        <div class="text-right">
-                            <h3 class="text-lg font-medium text-gray-900">Total: 
-                                <span th:text="${'Rp' + #numbers.formatDecimal(totalHargaBeli, 0, 'COMMA', 2, 'POINT')}"></span>
-                            </h3>
-                            <p class="text-sm text-gray-500 mt-1">Termasuk semua pajak</p>
-                        </div>
-                    </div>
-                </div>
-                <form id="checkoutBeliForm" th:action="@{'/user/transaksi/checkout-beli'}" method="post" class="mt-2 text-right">
-                    <button type="button" id="btnCheckoutBeli" class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700">
-                        Beli Sekarang <i class="fas fa-shopping-bag ml-2"></i>
-                    </button>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                      <span
+                        th:text="${'Rp ' + #numbers.formatDecimal(item.product.hargaSewaPerHari, 0, 'COMMA', 2, 'POINT')}"
+                      ></span>
+                    </td>
+                    <td class="px-6 py-4 text-sm font-bold text-yellow-600">
+                      <span
+                        th:text="${'Rp ' + #numbers.formatDecimal(item.product.hargaSewaPerHari * item.jumlah, 0, 'COMMA', 2, 'POINT')}"
+                      ></span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                      <form
+                        th:action="@{'/user/keranjang/remove/' + ${item.idKeranjang}}"
+                        method="post"
+                      >
+                        <button
+                          type="submit"
+                          class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-colors"
+                        >
+                          <i class="fas fa-trash-alt mr-1"></i> Hapus
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Rental Cart Footer -->
+            <div class="bg-yellow-50 rounded-xl p-6 mt-6">
+              <div class="flex justify-between items-center">
+                <form
+                  th:action="@{'/user/keranjang/clear?tipeAksi=SEWA'}"
+                  method="post"
+                >
+                  <button
+                    type="submit"
+                    class="text-red-600 hover:text-red-800 font-semibold bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors"
+                  >
+                    <i class="fas fa-trash-alt mr-2"></i> Kosongkan Keranjang
+                  </button>
                 </form>
-            </div>
-            <!-- Modal Konfirmasi Checkout BELI -->
-            <div id="modalCheckoutBeli" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
-                <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-8 relative">
-                    <button id="closeModalBeli" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
-                    <h2 class="text-xl font-bold mb-4 text-green-700 flex items-center"><i class="fas fa-shopping-bag mr-2"></i> Konfirmasi Pembelian</h2>
-                    <div class="mb-4">
-                        <h3 class="font-semibold mb-2">Detail Transaksi:</h3>
-                        <table class="w-full text-sm mb-2">
-                            <thead>
-                                <tr class="text-gray-500">
-                                    <th class="text-left">Produk</th>
-                                    <th class="text-center">Jumlah</th>
-                                    <th class="text-right">Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="item : ${keranjangList}" th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).BELI}">
-                                    <td th:text="${item.product.namaProduk}"></td>
-                                    <td class="text-center" th:text="${item.jumlah}"></td>
-                                    <td class="text-right" th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaJual * item.jumlah, 0, 'COMMA', 2, 'POINT')}"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="text-right font-semibold mt-2">
-                            Total: <span th:text="${'Rp' + #numbers.formatDecimal(totalHargaBeli, 0, 'COMMA', 2, 'POINT')}"></span>
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <h3 class="font-semibold mb-2">Data Pengiriman:</h3>
-                        <div class="mb-2">
-                            <label class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
-                            <input type="text" name="namaLengkap" form="checkoutBeliForm" th:value="${user.namaLengkap}" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" />
-                        </div>
-                        <div class="mb-2">
-                            <label class="block text-sm font-medium text-gray-700">No. Telepon</label>
-                            <input type="text" name="noTelepon" form="checkoutBeliForm" th:value="${user.noTelepon}" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label>
-                            <textarea name="alamat" form="checkoutBeliForm" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" th:text="${user.alamat}"></textarea>
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <h3 class="font-semibold mb-2">Metode Pembayaran:</h3>
-                        <select name="metodePembayaran" form="checkoutBeliForm" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="">Pilih Metode Pembayaran</option>
-                            <option value="COD">Bayar di Tempat (COD)</option>
-                            <option value="TRANSFER">Transfer Bank</option>
-                        </select>
-                    </div>
-                    <div class="flex justify-end gap-2 mt-4">
-                        <button id="batalCheckoutBeli" type="button" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700">Batal</button>
-                        <button type="submit" form="checkoutBeliForm" class="px-6 py-2 rounded bg-green-600 hover:bg-green-700 text-white font-semibold">Konfirmasi &amp; Bayar</button>
-                    </div>
+                <div class="text-right">
+                  <p class="text-sm text-gray-600 mb-1">
+                    Total Penyewaan (per hari)
+                  </p>
+                  <h3 class="text-2xl font-bold text-yellow-600">
+                    <span
+                      th:text="${'Rp ' + #numbers.formatDecimal(totalHargaSewa, 0, 'COMMA', 2, 'POINT')}"
+                    ></span>
+                  </h3>
                 </div>
+              </div>
+              <div class="mt-4 flex justify-end">
+                <button
+                  type="button"
+                  id="btnCheckoutSewa"
+                  class="bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center"
+                >
+                  <i class="fas fa-calendar-check mr-2"></i> Checkout Penyewaan
+                </button>
+              </div>
             </div>
-            <script>
-                const btnCheckoutBeli = document.getElementById('btnCheckoutBeli');
-                const modalCheckoutBeli = document.getElementById('modalCheckoutBeli');
-                const closeModalBeli = document.getElementById('closeModalBeli');
-                const batalCheckoutBeli = document.getElementById('batalCheckoutBeli');
-                btnCheckoutBeli.addEventListener('click', function() {
-                    modalCheckoutBeli.classList.remove('hidden');
-                });
-                closeModalBeli.addEventListener('click', function() {
-                    modalCheckoutBeli.classList.add('hidden');
-                });
-                batalCheckoutBeli.addEventListener('click', function() {
-                    modalCheckoutBeli.classList.add('hidden');
-                });
-                // Optional: close modal on ESC
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape') modalCheckoutBeli.classList.add('hidden');
-                });
-            </script>
-            <div class="mb-8">
-                <h2 class="text-lg font-bold text-yellow-700 mb-2 flex items-center"><i class="fas fa-key mr-2"></i> Keranjang Sewa</h2>
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produk</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr th:each="item, iterStat : ${keranjangList}" th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).SEWA}">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${iterStat.index + 1}"></td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                <img class="h-10 w-10 rounded-full" th:src="${item.product.imgUrl}" th:alt="${item.product.namaProduk}">
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900" th:text="${item.product.namaProduk}"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <form th:action="@{'/user/keranjang/update/' + ${item.idKeranjang}}" method="post" class="flex items-center">
-                                                <input type="hidden" name="tipeAksi" th:value="${item.tipeAksi}" />
-                                                <button type="submit" name="action" value="decrement" class="text-gray-500 hover:text-gray-700 px-2">
-                                                    <i class="fas fa-minus"></i>
-                                                </button>
-                                                <span class="mx-2 text-sm text-gray-700" th:text="${item.jumlah}"></span>
-                                                <button type="submit" name="action" value="increment" class="text-gray-500 hover:text-gray-700 px-2">
-                                                    <i class="fas fa-plus"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <span th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaSewaPerHari, 0, 'COMMA', 2, 'POINT')}"></span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        <span th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaSewaPerHari * item.jumlah, 0, 'COMMA', 2, 'POINT')}"></span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <form th:action="@{'/user/keranjang/remove/' + ${item.idKeranjang}}" method="post">
-                                            <button type="submit" class="text-red-600 hover:text-red-900">
-                                                <i class="fas fa-trash-alt"></i> Hapus
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- Total & Kosongkan Keranjang SEWA -->
-                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
-                    <div class="flex justify-between items-center">
-                        <form th:action="@{'/user/keranjang/clear?tipeAksi=SEWA'}" method="post">
-                            <button type="submit" class="text-red-600 hover:text-red-800 font-medium">
-                                <i class="fas fa-trash-alt mr-2"></i> Kosongkan Keranjang
-                            </button>
-                        </form>
-                        <div class="text-right">
-                            <h3 class="text-lg font-medium text-gray-900">Total: 
-                                <span th:text="${'Rp' + #numbers.formatDecimal(totalHargaSewa, 0, 'COMMA', 2, 'POINT')}"></span>
-                            </h3>
-                            <p class="text-sm text-gray-500 mt-1">Termasuk semua pajak</p>
-                        </div>
-                    </div>
-                </div>
-                <form th:action="@{'/user/transaksi/checkout-sewa'}" method="post" class="mt-2 text-right">
-                    <button type="button" id="btnCheckoutSewa" class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700">
-                        Sewa Sekarang <i class="fas fa-key ml-2"></i>
-                    </button>
-                </form>
-            </div>
+          </div>
         </div>
+      </div>
     </div>
+
+    <!-- Modal Konfirmasi Checkout BELI -->
+    <div
+      id="modalCheckoutBeli"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden"
+    >
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-8 relative">
+        <button
+          id="closeModalBeli"
+          class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
+        >
+          &times;
+        </button>
+        <h2 class="text-xl font-bold mb-4 text-green-700 flex items-center">
+          <i class="fas fa-shopping-bag mr-2"></i> Konfirmasi Pembelian
+        </h2>
+        <div class="mb-4">
+          <h3 class="font-semibold mb-2">Detail Transaksi:</h3>
+          <table class="w-full text-sm mb-2">
+            <thead>
+              <tr class="text-gray-500">
+                <th class="text-left">Produk</th>
+                <th class="text-center">Jumlah</th>
+                <th class="text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                th:each="item : ${keranjangList}"
+                th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).BELI}"
+              >
+                <td th:text="${item.product.namaProduk}"></td>
+                <td class="text-center" th:text="${item.jumlah}"></td>
+                <td
+                  class="text-right"
+                  th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaJual * item.jumlah, 0, 'COMMA', 2, 'POINT')}"
+                ></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-right font-semibold mt-2">
+            Total:
+            <span
+              th:text="${'Rp' + #numbers.formatDecimal(totalHargaBeli, 0, 'COMMA', 2, 'POINT')}"
+            ></span>
+          </div>
+        </div>
+        <div class="mb-4">
+          <h3 class="font-semibold mb-2">Data Pengiriman:</h3>
+          <div class="mb-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Nama Lengkap</label
+            >
+            <input
+              type="text"
+              name="namaLengkap"
+              form="checkoutBeliForm"
+              th:value="${user.namaLengkap}"
+              class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
+          <div class="mb-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >No. Telepon</label
+            >
+            <input
+              type="text"
+              name="noTelepon"
+              form="checkoutBeliForm"
+              th:value="${user.noTelepon}"
+              class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Alamat Pengiriman</label
+            >
+            <textarea
+              name="alamat"
+              form="checkoutBeliForm"
+              class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              th:text="${user.alamat}"
+            ></textarea>
+          </div>
+        </div>
+        <div class="mb-4">
+          <h3 class="font-semibold mb-2">Metode Pembayaran:</h3>
+          <select
+            name="metodePembayaran"
+            form="checkoutBeliForm"
+            required
+            class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <option value="">Pilih Metode Pembayaran</option>
+            <option value="COD">Bayar di Tempat (COD)</option>
+            <option value="TRANSFER">Transfer Bank</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button
+            id="batalCheckoutBeli"
+            type="button"
+            class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            form="checkoutBeliForm"
+            class="px-6 py-2 rounded bg-green-600 hover:bg-green-700 text-white font-semibold"
+          >
+            Konfirmasi &amp; Bayar
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+      const btnCheckoutBeli = document.getElementById("btnCheckoutBeli");
+      const modalCheckoutBeli = document.getElementById("modalCheckoutBeli");
+      const closeModalBeli = document.getElementById("closeModalBeli");
+      const batalCheckoutBeli = document.getElementById("batalCheckoutBeli");
+      btnCheckoutBeli.addEventListener("click", function () {
+        modalCheckoutBeli.classList.remove("hidden");
+      });
+      closeModalBeli.addEventListener("click", function () {
+        modalCheckoutBeli.classList.add("hidden");
+      });
+      batalCheckoutBeli.addEventListener("click", function () {
+        modalCheckoutBeli.classList.add("hidden");
+      });
+      // Optional: close modal on ESC
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") modalCheckoutBeli.classList.add("hidden");
+      });
+    </script>
     <!-- Modal Konfirmasi Checkout SEWA -->
-    <div id="modalCheckoutSewa" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-8 relative">
-            <button id="closeModalSewa" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
-            <h2 class="text-xl font-bold mb-4 text-yellow-700 flex items-center"><i class="fas fa-key mr-2"></i> Konfirmasi Penyewaan</h2>
-            <div class="mb-4">
-                <h3 class="font-semibold mb-2">Detail Transaksi:</h3>
-                <table class="w-full text-sm mb-2">
-                    <thead>
-                        <tr class="text-gray-500">
-                            <th class="text-left">Produk</th>
-                            <th class="text-center">Jumlah</th>
-                            <th class="text-right">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="item : ${keranjangList}" th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).SEWA}">
-                            <td th:text="${item.product.namaProduk}"></td>
-                            <td class="text-center" th:text="${item.jumlah}"></td>
-                            <td class="text-right" th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaSewaPerHari * item.jumlah, 0, 'COMMA', 2, 'POINT')}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="text-right font-semibold mt-2">
-                    Total: <span th:text="${'Rp' + #numbers.formatDecimal(totalHargaSewa, 0, 'COMMA', 2, 'POINT')}"></span>
-                </div>
-            </div>
-            <div class="mb-4">
-                <h3 class="font-semibold mb-2">Data Pengiriman:</h3>
-                <div class="mb-2">
-                    <label class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
-                    <input type="text" name="namaLengkap" id="modalNamaLengkap" th:value="${user.namaLengkap}" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" />
-                </div>
-                <div class="mb-2">
-                    <label class="block text-sm font-medium text-gray-700">No. Telepon</label>
-                    <input type="text" name="noTelepon" id="modalNoTelepon" th:value="${user.noTelepon}" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label>
-                    <textarea name="alamat" id="modalAlamat" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" th:text="${user.alamat}"></textarea>
-                </div>
-            </div>
-            <div class="mb-4 flex gap-4">
-                <div class="w-1/2">
-                    <label class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
-                    <input type="date" name="tanggalMulai" id="modalTanggalMulai" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" />
-                </div>
-                <div class="w-1/2">
-                    <label class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
-                    <input type="date" name="tanggalSelesai" id="modalTanggalSelesai" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" />
-                </div>
-            </div>
-            <div class="mb-4">
-                <h3 class="font-semibold mb-2">Metode Pembayaran:</h3>
-                <select name="metodePembayaran" id="modalMetodePembayaran" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                    <option value="">Pilih Metode Pembayaran</option>
-                    <option value="COD">Bayar di Tempat (COD)</option>
-                    <option value="TRANSFER">Transfer Bank</option>
-                </select>
-            </div>
-            <div class="flex justify-end gap-2 mt-4">
-                <button id="batalCheckoutSewa" type="button" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700">Batal</button>
-                <button type="submit" form="checkoutSewaForm" class="px-6 py-2 rounded bg-yellow-600 hover:bg-yellow-700 text-white font-semibold">Konfirmasi &amp; Sewa</button>
-            </div>
+    <div
+      id="modalCheckoutSewa"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden"
+    >
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-8 relative">
+        <button
+          id="closeModalSewa"
+          class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
+        >
+          &times;
+        </button>
+        <h2 class="text-xl font-bold mb-4 text-yellow-700 flex items-center">
+          <i class="fas fa-key mr-2"></i> Konfirmasi Penyewaan
+        </h2>
+        <div class="mb-4">
+          <h3 class="font-semibold mb-2">Detail Transaksi:</h3>
+          <table class="w-full text-sm mb-2">
+            <thead>
+              <tr class="text-gray-500">
+                <th class="text-left">Produk</th>
+                <th class="text-center">Jumlah</th>
+                <th class="text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                th:each="item : ${keranjangList}"
+                th:if="${item.tipeAksi == T(com.uaspbo.aljabar_outdoor.model.Keranjang.TipeAksi).SEWA}"
+              >
+                <td th:text="${item.product.namaProduk}"></td>
+                <td class="text-center" th:text="${item.jumlah}"></td>
+                <td
+                  class="text-right"
+                  th:text="${'Rp' + #numbers.formatDecimal(item.product.hargaSewaPerHari * item.jumlah, 0, 'COMMA', 2, 'POINT')}"
+                ></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-right font-semibold mt-2">
+            Total:
+            <span
+              th:text="${'Rp' + #numbers.formatDecimal(totalHargaSewa, 0, 'COMMA', 2, 'POINT')}"
+            ></span>
+          </div>
         </div>
+        <div class="mb-4">
+          <h3 class="font-semibold mb-2">Data Pengiriman:</h3>
+          <div class="mb-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Nama Lengkap</label
+            >
+            <input
+              type="text"
+              name="namaLengkap"
+              id="modalNamaLengkap"
+              th:value="${user.namaLengkap}"
+              class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            />
+          </div>
+          <div class="mb-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >No. Telepon</label
+            >
+            <input
+              type="text"
+              name="noTelepon"
+              id="modalNoTelepon"
+              th:value="${user.noTelepon}"
+              class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Alamat Pengiriman</label
+            >
+            <textarea
+              name="alamat"
+              id="modalAlamat"
+              class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              th:text="${user.alamat}"
+            ></textarea>
+          </div>
+        </div>
+        <div class="mb-4 flex gap-4">
+          <div class="w-1/2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Tanggal Mulai</label
+            >
+            <input
+              type="date"
+              name="tanggalMulai"
+              id="modalTanggalMulai"
+              required
+              class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            />
+          </div>
+          <div class="w-1/2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Tanggal Selesai</label
+            >
+            <input
+              type="date"
+              name="tanggalSelesai"
+              id="modalTanggalSelesai"
+              required
+              class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            />
+          </div>
+        </div>
+        <div class="mb-4">
+          <h3 class="font-semibold mb-2">Metode Pembayaran:</h3>
+          <select
+            name="metodePembayaran"
+            id="modalMetodePembayaran"
+            required
+            class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          >
+            <option value="">Pilih Metode Pembayaran</option>
+            <option value="COD">Bayar di Tempat (COD)</option>
+            <option value="TRANSFER">Transfer Bank</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button
+            id="batalCheckoutSewa"
+            type="button"
+            class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            form="checkoutSewaForm"
+            class="px-6 py-2 rounded bg-yellow-600 hover:bg-yellow-700 text-white font-semibold"
+          >
+            Konfirmasi &amp; Sewa
+          </button>
+        </div>
+      </div>
     </div>
-    <form id="checkoutSewaForm" th:action="@{'/user/transaksi/checkout-sewa'}" method="post" class="hidden">
-        <input type="hidden" name="namaLengkap" form="checkoutSewaForm" />
-        <input type="hidden" name="noTelepon" form="checkoutSewaForm" />
-        <input type="hidden" name="alamat" form="checkoutSewaForm" />
-        <input type="hidden" name="tanggalMulai" form="checkoutSewaForm" />
-        <input type="hidden" name="tanggalSelesai" form="checkoutSewaForm" />
-        <input type="hidden" name="metodePembayaran" form="checkoutSewaForm" />
+    <form
+      id="checkoutSewaForm"
+      th:action="@{'/user/transaksi/checkout-sewa'}"
+      method="post"
+      class="hidden"
+    >
+      <input type="hidden" name="namaLengkap" form="checkoutSewaForm" />
+      <input type="hidden" name="noTelepon" form="checkoutSewaForm" />
+      <input type="hidden" name="alamat" form="checkoutSewaForm" />
+      <input type="hidden" name="tanggalMulai" form="checkoutSewaForm" />
+      <input type="hidden" name="tanggalSelesai" form="checkoutSewaForm" />
+      <input type="hidden" name="metodePembayaran" form="checkoutSewaForm" />
     </form>
     <script>
-        const btnCheckoutSewa = document.getElementById('btnCheckoutSewa');
-        const modalCheckoutSewa = document.getElementById('modalCheckoutSewa');
-        const closeModalSewa = document.getElementById('closeModalSewa');
-        const batalCheckoutSewa = document.getElementById('batalCheckoutSewa');
-        btnCheckoutSewa.addEventListener('click', function(e) {
-            e.preventDefault();
-            modalCheckoutSewa.classList.remove('hidden');
-        });
-        closeModalSewa.addEventListener('click', function() {
-            modalCheckoutSewa.classList.add('hidden');
-        });
-        batalCheckoutSewa.addEventListener('click', function() {
-            modalCheckoutSewa.classList.add('hidden');
-        });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') modalCheckoutSewa.classList.add('hidden');
-        });
-        // Modal SEWA: submit tanggal & data pengiriman ke form tersembunyi
-        const checkoutSewaForm = document.getElementById('checkoutSewaForm');
-        const tanggalMulaiInput = document.querySelector('input[name="tanggalMulai"][form="checkoutSewaForm"]');
-        const tanggalSelesaiInput = document.querySelector('input[name="tanggalSelesai"][form="checkoutSewaForm"]');
-        const namaLengkapInput = document.querySelector('input[name="namaLengkap"][form="checkoutSewaForm"]');
-        const noTeleponInput = document.querySelector('input[name="noTelepon"][form="checkoutSewaForm"]');
-        // Ambil hidden input (hanya input, bukan textarea)
-        const alamatInput = document.querySelector('input[type="hidden"][name="alamat"][form="checkoutSewaForm"]');
-        const tanggalMulaiModal = document.getElementById('modalTanggalMulai');
-        const tanggalSelesaiModal = document.getElementById('modalTanggalSelesai');
-        const namaLengkapModal = document.getElementById('modalNamaLengkap');
-        const noTeleponModal = document.getElementById('modalNoTelepon');
-        const alamatModal = document.getElementById('modalAlamat');
-        const btnSubmitSewa = document.querySelector('#modalCheckoutSewa button[type="submit"]');
-        // JS: binding metode pembayaran
-        const metodePembayaranInput = document.querySelector('input[name="metodePembayaran"][form="checkoutSewaForm"]');
-        const metodePembayaranModal = document.getElementById('modalMetodePembayaran');
-        btnSubmitSewa.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Validasi tanggal
-            if (!tanggalMulaiModal.value || !tanggalSelesaiModal.value) {
-                alert('Tanggal mulai dan tanggal selesai harus diisi!');
-                return;
-            }
-            if (!metodePembayaranModal.value) {
-                alert('Pilih metode pembayaran!');
-                return;
-            }
-            tanggalMulaiInput.value = tanggalMulaiModal.value.trim().replace(/,/g, '');
-            tanggalSelesaiInput.value = tanggalSelesaiModal.value.trim().replace(/,/g, '');
-            namaLengkapInput.value = namaLengkapModal.value.trim();
-            noTeleponInput.value = noTeleponModal.value.trim();
-            alamatInput.value = alamatModal.value.trim();
-            metodePembayaranInput.value = metodePembayaranModal.value;
-            checkoutSewaForm.submit();
-        });
+      const btnCheckoutSewa = document.getElementById("btnCheckoutSewa");
+      const modalCheckoutSewa = document.getElementById("modalCheckoutSewa");
+      const closeModalSewa = document.getElementById("closeModalSewa");
+      const batalCheckoutSewa = document.getElementById("batalCheckoutSewa");
+      btnCheckoutSewa.addEventListener("click", function (e) {
+        e.preventDefault();
+        modalCheckoutSewa.classList.remove("hidden");
+      });
+      closeModalSewa.addEventListener("click", function () {
+        modalCheckoutSewa.classList.add("hidden");
+      });
+      batalCheckoutSewa.addEventListener("click", function () {
+        modalCheckoutSewa.classList.add("hidden");
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") modalCheckoutSewa.classList.add("hidden");
+      });
+      // Modal SEWA: submit tanggal & data pengiriman ke form tersembunyi
+      const checkoutSewaForm = document.getElementById("checkoutSewaForm");
+      const tanggalMulaiInput = document.querySelector(
+        'input[name="tanggalMulai"][form="checkoutSewaForm"]'
+      );
+      const tanggalSelesaiInput = document.querySelector(
+        'input[name="tanggalSelesai"][form="checkoutSewaForm"]'
+      );
+      const namaLengkapInput = document.querySelector(
+        'input[name="namaLengkap"][form="checkoutSewaForm"]'
+      );
+      const noTeleponInput = document.querySelector(
+        'input[name="noTelepon"][form="checkoutSewaForm"]'
+      );
+      // Ambil hidden input (hanya input, bukan textarea)
+      const alamatInput = document.querySelector(
+        'input[type="hidden"][name="alamat"][form="checkoutSewaForm"]'
+      );
+      const tanggalMulaiModal = document.getElementById("modalTanggalMulai");
+      const tanggalSelesaiModal = document.getElementById(
+        "modalTanggalSelesai"
+      );
+      const namaLengkapModal = document.getElementById("modalNamaLengkap");
+      const noTeleponModal = document.getElementById("modalNoTelepon");
+      const alamatModal = document.getElementById("modalAlamat");
+      const btnSubmitSewa = document.querySelector(
+        '#modalCheckoutSewa button[type="submit"]'
+      );
+      // JS: binding metode pembayaran
+      const metodePembayaranInput = document.querySelector(
+        'input[name="metodePembayaran"][form="checkoutSewaForm"]'
+      );
+      const metodePembayaranModal = document.getElementById(
+        "modalMetodePembayaran"
+      );
+      btnSubmitSewa.addEventListener("click", function (e) {
+        e.preventDefault();
+        // Validasi tanggal
+        if (!tanggalMulaiModal.value || !tanggalSelesaiModal.value) {
+          alert("Tanggal mulai dan tanggal selesai harus diisi!");
+          return;
+        }
+        if (!metodePembayaranModal.value) {
+          alert("Pilih metode pembayaran!");
+          return;
+        }
+        tanggalMulaiInput.value = tanggalMulaiModal.value
+          .trim()
+          .replace(/,/g, "");
+        tanggalSelesaiInput.value = tanggalSelesaiModal.value
+          .trim()
+          .replace(/,/g, "");
+        namaLengkapInput.value = namaLengkapModal.value.trim();
+        noTeleponInput.value = noTeleponModal.value.trim();
+        alamatInput.value = alamatModal.value.trim();
+        metodePembayaranInput.value = metodePembayaranModal.value;
+        checkoutSewaForm.submit();
+      });
     </script>
-</body>
+  </body>
 </html>
