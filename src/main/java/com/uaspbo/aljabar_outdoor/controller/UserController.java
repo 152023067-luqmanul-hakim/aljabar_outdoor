@@ -77,9 +77,13 @@ public class UserController {
     }
 
     @GetMapping("/product/{id}")
-    public String productDetail(@PathVariable("id") Integer id, Model model) {
+    public String productDetail(@PathVariable("id") Integer id, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails) {
         Product product = productRepository.findById(id).orElse(null);
         model.addAttribute("product", product);
+        if (userDetails != null) {
+            com.uaspbo.aljabar_outdoor.model.User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+            model.addAttribute("user", user);
+        }
         return "user/product-detail";
     }
 

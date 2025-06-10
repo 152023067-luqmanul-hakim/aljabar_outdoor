@@ -198,6 +198,122 @@ public class TransaksiController {
         return "redirect:/login?error=userNotFound";
     }
 
+    @PostMapping("/checkout-product")
+    public String checkoutProduct(
+            Principal principal,
+            @RequestParam("idProduk") Integer idProduk,
+            @RequestParam("jumlah") Integer jumlah,
+            @RequestParam("actionType") String actionType,
+            @RequestParam("namaLengkap") String namaLengkap,
+            @RequestParam("noTelepon") String noTelepon,
+            @RequestParam("alamat") String alamat,
+            @RequestParam(value = "metodePembayaran") String metodePembayaranStr,
+            @RequestParam(value = "tanggalMulai", required = false) String tanggalMulaiStr,
+            @RequestParam(value = "tanggalSelesai", required = false) String tanggalSelesaiStr,
+            Model model
+    ) {
+        Optional<User> optionalUser = userRepository.findByUsername(principal.getName());
+        Optional<Product> optionalProduct = productRepository.findById(idProduk);
+        if (optionalUser.isEmpty() || optionalProduct.isEmpty()) {
+            return "redirect:/user/home";
+        }
+        User user = optionalUser.get();
+        Product product = optionalProduct.get();
+        // Sinkronisasi data user jika ada perubahan data pengiriman
+        boolean userChanged = false;
+        if (!user.getNamaLengkap().equals(namaLengkap)) {
+            user.setNamaLengkap(namaLengkap);
+            userChanged = true;
+        }
+        if (!user.getNoTelepon().equals(noTelepon)) {
+            user.setNoTelepon(noTelepon);
+            userChanged = true;
+        }
+        if (!user.getAlamat().equals(alamat)) {
+            user.setAlamat(alamat);
+            userChanged = true;
+        }
+        if (userChanged) userRepository.save(user);
+
+        if ("beli".equalsIgnoreCase(actionType)) {
+            // Proses transaksi jual satu produk
+            com.uaspbo.aljabar_outdoor.model.TransaksiJual transaksiJual = new com.uaspbo.aljabar_outdoor.model.TransaksiJual();
+            transaksiJual.setUser(user);
+            transaksiJual.setTanggalTransaksi(java.time.LocalDateTime.now());
+            transaksiJual.setStatus(com.uaspbo.aljabar_outdoor.model.Transaksi.StatusTransaksi.Diproses);
+            transaksiJual.setJenisTransaksi(com.uaspbo.aljabar_outdoor.model.Transaksi.JenisTransaksi.Beli);
+            // Metode pembayaran
+            try {
+                transaksiJual.setMetodePembayaran(com.uaspbo.aljabar_outdoor.model.TransaksiJual.MetodePembayaran.valueOf(metodePembayaranStr));
+            } catch (Exception e) {
+                transaksiJual.setMetodePembayaran(com.uaspbo.aljabar_outdoor.model.TransaksiJual.MetodePembayaran.COD);
+            }
+            // Detail
+            var detail = new com.uaspbo.aljabar_outdoor.model.DetailTransaksiJual();
+            detail.setTransaksiJual(transaksiJual);
+            detail.setProduct(product);
+            detail.setJumlah(jumlah);
+            detail.setHargaSatuan(product.getHargaJual());
+            detail.setSubtotal(product.getHargaJual().multiply(java.math.BigDecimal.valueOf(jumlah)));
+            java.util.List<com.uaspbo.aljabar_outdoor.model.DetailTransaksiJual> detailList = new java.util.ArrayList<>();
+            detailList.add(detail);
+            transaksiJual.setDetailList(detailList);
+            // Hitung total
+            transaksiJual.setTotal(detail.getSubtotal());
+            // Kurangi stok jual
+            Integer stokJual = product.getStokJual() != null ? product.getStokJual() : 0;
+            product.setStokJual(Math.max(0, stokJual - jumlah));
+            productRepository.save(product);
+            // Simpan transaksi
+            transaksiRepository.save(transaksiJual);
+            return "redirect:/user/transaksi/riwayat";
+        } else if ("sewa".equalsIgnoreCase(actionType)) {
+            // Proses transaksi sewa satu produk
+            if (tanggalMulaiStr == null || tanggalSelesaiStr == null) {
+                model.addAttribute("error", "Tanggal sewa harus diisi!");
+                return "redirect:/user/product/" + idProduk;
+            }
+            java.time.LocalDate tanggalMulai = java.time.LocalDate.parse(tanggalMulaiStr);
+            java.time.LocalDate tanggalSelesai = java.time.LocalDate.parse(tanggalSelesaiStr);
+            long days = java.time.temporal.ChronoUnit.DAYS.between(tanggalMulai, tanggalSelesai);
+            if (days < 1) days = 1;
+            com.uaspbo.aljabar_outdoor.model.TransaksiPeminjaman transaksiPeminjaman = new com.uaspbo.aljabar_outdoor.model.TransaksiPeminjaman();
+            transaksiPeminjaman.setUser(user);
+            transaksiPeminjaman.setTanggalTransaksi(java.time.LocalDateTime.now());
+            transaksiPeminjaman.setStatus(com.uaspbo.aljabar_outdoor.model.Transaksi.StatusTransaksi.Diproses);
+            transaksiPeminjaman.setJenisTransaksi(com.uaspbo.aljabar_outdoor.model.Transaksi.JenisTransaksi.Sewa);
+            transaksiPeminjaman.setTanggalMulai(tanggalMulai);
+            transaksiPeminjaman.setTanggalSelesai(tanggalSelesai);
+            // Metode pembayaran
+            try {
+                transaksiPeminjaman.setMetodePembayaran(com.uaspbo.aljabar_outdoor.model.TransaksiPeminjaman.MetodePembayaran.valueOf(metodePembayaranStr));
+            } catch (Exception e) {
+                transaksiPeminjaman.setMetodePembayaran(com.uaspbo.aljabar_outdoor.model.TransaksiPeminjaman.MetodePembayaran.COD);
+            }
+            // Detail
+            var detail = new com.uaspbo.aljabar_outdoor.model.DetailTransaksiPeminjaman();
+            detail.setTransaksiPeminjaman(transaksiPeminjaman);
+            detail.setProduct(product);
+            detail.setJumlah(jumlah);
+            detail.setHargaPerHari(product.getHargaSewaPerHari());
+            detail.setSubtotal(product.getHargaSewaPerHari().multiply(java.math.BigDecimal.valueOf(jumlah)));
+            java.util.List<com.uaspbo.aljabar_outdoor.model.DetailTransaksiPeminjaman> detailList = new java.util.ArrayList<>();
+            detailList.add(detail);
+            transaksiPeminjaman.setDetailList(detailList);
+            // Hitung total
+            java.math.BigDecimal total = detail.getSubtotal().multiply(java.math.BigDecimal.valueOf(days));
+            transaksiPeminjaman.setTotal(total);
+            // Kurangi stok sewa
+            Integer stokSewa = product.getStokSewa() != null ? product.getStokSewa() : 0;
+            product.setStokSewa(Math.max(0, stokSewa - jumlah));
+            productRepository.save(product);
+            // Simpan transaksi
+            transaksiRepository.save(transaksiPeminjaman);
+            return "redirect:/user/transaksi/riwayat";
+        }
+        return "redirect:/user/home";
+    }
+
     @GetMapping("/riwayat")
     public String riwayatTransaksi(Principal principal, Model model) {
         Optional<User> optionalUser = userRepository.findByUsername(principal.getName());

@@ -137,6 +137,51 @@
   <span id="stokSewa" class="hidden" th:text="${product.stokSewa}"></span>
   <span id="stokJual" class="hidden" th:text="${product.stokJual}"></span>
 
+  <!-- Modal Checkout Langsung (Mirip Modal Keranjang) -->
+  <div id="modalCheckout" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-8 relative">
+      <button type="button" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-2xl" onclick="closeModalCheckout()">&times;</button>
+      <h2 class="text-xl font-bold mb-4 text-primary-700 flex items-center"><i class="fas fa-credit-card mr-2"></i> Konfirmasi Checkout</h2>
+      <form id="checkoutProductForm" th:action="@{'/user/transaksi/checkout-product'}" method="post">
+        <input type="hidden" name="idProduk" th:value="${product.idProduk}" id="checkoutIdProduk" />
+        <input type="hidden" name="actionType" id="checkoutActionType" value="sewa" />
+        <input type="hidden" name="jumlah" id="checkoutJumlah" value="1" />
+        <div class="mb-4 grid grid-cols-1 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Nama Penerima</label>
+            <input type="text" name="namaLengkap" id="modalNamaLengkap" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary-500" th:value="${user != null ? user.namaLengkap : ''}" required />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">No. HP</label>
+            <input type="text" name="noTelepon" id="modalNoTelepon" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary-500" th:value="${user != null ? user.noTelepon : ''}" required />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label>
+            <textarea name="alamat" id="modalAlamat" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary-500" required th:text="${user != null ? user.alamat : ''}"></textarea>
+          </div>
+        </div>
+        <div class="mb-4" id="tanggalSewaSection">
+          <label class="block text-sm font-medium text-gray-700">Tanggal Mulai Sewa</label>
+          <input type="date" name="tanggalMulai" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary-500" id="tanggalMulaiInput" />
+          <label class="block text-sm font-medium text-gray-700 mt-2">Tanggal Selesai Sewa</label>
+          <input type="date" name="tanggalSelesai" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary-500" id="tanggalSelesaiInput" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
+          <select name="metodePembayaran" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary-500" required>
+            <option value="">Pilih Metode Pembayaran</option>
+            <option value="COD">Bayar di Tempat (COD)</option>
+            <option value="TRANSFER">Transfer Bank</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button type="button" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700" onclick="closeModalCheckout()">Batal</button>
+          <button type="submit" class="px-6 py-2 rounded bg-primary-600 hover:bg-primary-700 text-white font-semibold">Konfirmasi &amp; Bayar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     // DOM Elements
     const btnSewa = document.getElementById('btnSewa');
@@ -213,10 +258,54 @@
       }
     });
 
-    // Checkout button click handler
-    btnCheckout.addEventListener('click', function() {
-      // You can implement direct checkout functionality here
-      alert('Fitur checkout langsung akan segera tersedia!');
+    const modalCheckout = document.getElementById('modalCheckout');
+    const checkoutProductForm = document.getElementById('checkoutProductForm');
+    const checkoutActionType = document.getElementById('checkoutActionType');
+    const checkoutJumlah = document.getElementById('checkoutJumlah');
+    const tanggalSewaSection = document.getElementById('tanggalSewaSection');
+    const tanggalMulaiInput = document.getElementById('tanggalMulaiInput');
+    const tanggalSelesaiInput = document.getElementById('tanggalSelesaiInput');
+
+    function openModalCheckout() {
+      checkoutActionType.value = actionType.value;
+      checkoutJumlah.value = quantityInput.value;
+      const nama = document.getElementById('modalNamaLengkap');
+      const telepon = document.getElementById('modalNoTelepon');
+      const alamat = document.getElementById('modalAlamat');
+      if (nama && telepon && alamat) {
+        if (!nama.value) nama.value = nama.getAttribute('value') || '';
+        if (!telepon.value) telepon.value = telepon.getAttribute('value') || '';
+        if (!alamat.value) alamat.value = alamat.textContent || alamat.innerText || '';
+      }
+      if (actionType.value === 'sewa') {
+        tanggalSewaSection.style.display = '';
+        tanggalMulaiInput.required = true;
+        tanggalSelesaiInput.required = true;
+      } else {
+        tanggalSewaSection.style.display = 'none';
+        tanggalMulaiInput.required = false;
+        tanggalSelesaiInput.required = false;
+      }
+      modalCheckout.classList.remove('hidden');
+    }
+    function closeModalCheckout() {
+      modalCheckout.classList.add('hidden');
+    }
+    btnCheckout.addEventListener('click', openModalCheckout);
+    // Validasi tanggal sewa (opsional, bisa ditambah di sini)
+    checkoutProductForm.addEventListener('submit', function(e) {
+      if (checkoutActionType.value === 'sewa') {
+        if (!tanggalMulaiInput.value || !tanggalSelesaiInput.value) {
+          alert('Tanggal sewa harus diisi!');
+          e.preventDefault();
+          return;
+        }
+        if (tanggalMulaiInput.value > tanggalSelesaiInput.value) {
+          alert('Tanggal selesai harus setelah tanggal mulai!');
+          e.preventDefault();
+          return;
+        }
+      }
     });
     
     // Initialize with rent option selected

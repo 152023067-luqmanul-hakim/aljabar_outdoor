@@ -23,6 +23,8 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jenis</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,6 +32,8 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${iterStat.index + 1}"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${#temporals.format(trx.tanggalTransaksi, 'dd/MM/yyyy HH:mm')}"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" th:text="${trx.status}"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" th:text="${trx.jenisTransaksi}"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" th:text="${'Rp ' + #numbers.formatDecimal(trx.total, 0, 'COMMA', 2, 'POINT')}"></td>
                     </tr>
                 </tbody>
             </table>
